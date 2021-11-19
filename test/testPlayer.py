@@ -1,4 +1,5 @@
 import unittest
+from microgrid.player import Player
 
 class TestPlayerClass(unittest.TestCase):
 

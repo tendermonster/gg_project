@@ -9,9 +9,9 @@ class Player():
     """
     blackout = 20
     max_storage = 150
-    #TODO implement utility variable
     def __init__(self,grid,id,p=100,c=100,b=100):
         random.seed(id)
+        self.money = 1000
         self.grid = grid # Microgrid object
         self.id = id
         self.p=p*random.random()
@@ -82,14 +82,45 @@ class Player():
             return 0
 
     def sell(self,amount: float,micro: bool) -> float:
+        #TODO CONNECT MODEL HERE
+        #THIS IS JUST A DEMO LOGIC
+        if self.selling >= amount:
+            #handle the exceptions
+            raise Exception("cannot sell this much")
+        #in this case the amount will be sold fully
+        left = amount
         if micro:
-            unsold = self.grid.buy(amount)
-            self.selling = unsold 
-        else:
-            #sell to main grid
-            self.selling = 0
+            left = self.grid.buy(amount) #buy from grid
+            sold = amount - left
+            self.money += sold*self.grid.AVG*self.grid.SELL_MICRO
+        #sell to grid the rest
+        self.money += left*self.grid.AVG*self.grid.SELL_MAIN
+        #might be needed here
+        self.selling = 0 # sold everything
+        self._updateCapToBuy()
     def buy(self,amount:float,micro: bool) -> float:
-        pass
+        #TODO CONNECT MODEL HERE
+        #THIS IS JUST A DEMO LOGIC
+        if self.buying <= amount:
+            #handle the exceptions 
+            raise Exception("sorry i cannot buy this much")
+
+        #in this case the amount will be bought fully
+        #for now buy only to charge the battery
+        left = amount
+        if micro:
+            left = self.grid.sell(amount) #buy from grid
+            bought = amount - left
+            self.money -= bought*self.grid.AVG*self.grid.BUY_MICRO
+        #buy from main grid
+        self.money -= left*self.grid.AVG*self.grid.BUY_MAIN
+        unused = self._updateStorage(amount)
+        #sell to grid unused
+        #TODO CONNECT MODEL HERE
+        self.money += unused*self.grid.AVG*self.grid.BUY_MAIN
+        #might be needed here
+        self._updateCapToBuy()
+        self._updateCapForSale()
 
     def step(self):
         #update sell
