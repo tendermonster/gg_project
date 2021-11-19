@@ -1,4 +1,4 @@
-from player import Player
+from microgrid.player import Player
 import numpy as np
 
 class Microgrid():
@@ -14,15 +14,25 @@ class Microgrid():
         self.players = []
         for i in range(n):
             self.players.append(Player(self,i))
+        for i in self.players:
+            i.step()
 
     def getStorageForSale(self):
-        totalStorage = 0
+        totalSupply = 0
         i : Player
         for i in self.players:
             sale = i.getCapForSale()
             if sale>0:
-                totalStorage += sale
-        return totalStorage
+                totalSupply += sale
+        return totalSupply
+    def getStorageToBuy(self):
+        totalyDamand = 0
+        i : Player
+        for i in self.players:
+            damand = i.getCapToBuy()
+            if damand>0:
+                totalyDamand += damand
+        return totalyDamand
 
     def getTotalP(self):
         p = 0
@@ -41,22 +51,13 @@ class Microgrid():
                 c += ci
         return c
 
-    def buy(self,amount : Player):
-        trueTotal = self.getStorageForSale() - amount.getCapForSale()
-        #TODO self only to other people that
-        #amountEach = amount/nPlayerBuying
-        for i in nPlayersbuying:
-            i.buy(amountEach)
-        # microgrid sells to players that want to buy    
-        if (self.getStorageForSale() - amount) < 0:
-            return True
-        #TODO finish method
-    #def currentPrice(self):
-    #    return np.interp(self.t,[0,24],[self.OFF_PEEK,self.PEEK])
-    
-    def step(self):
-        self.d += 1
-        """
+    def buy(self,amount:float) -> float:
+        pass
+
+    def sell(self,amount:float) -> float:
+        pass
+
+    def step(self) -> None:
+        self.day += 1
         for i in self.players:
             i.step()
-        """
