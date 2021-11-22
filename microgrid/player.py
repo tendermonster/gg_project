@@ -9,7 +9,7 @@ class Player():
     """
     blackout = 20
     max_storage = 150
-    def __init__(self,grid,id,p=100,c=100,b=100):
+    def __init__(self,grid,id,state,p=100,c=100,b=100):
         random.seed(id)
         self.money = 1000
         self.grid = grid # Microgrid object
@@ -17,18 +17,39 @@ class Player():
         self.p=p*random.random()
         self.c=c*random.random()
         self.b=b*random.random()
+        """
+        State: 1 - Selling, -1 - Buying, 0 - Storage, 2 - do nothing
+        """
+        self.state = state
         self.selling = 0
         self.buying = 0
         self.unused = 0
         self.produced = False
-    
+
     def __eq__(self,other):
         return self.id == other.id
     def __ne__(self,other):
         return self.id != other.id
-    
+
+    def possible_strategies(self) -> list:
+        """
+        Possible strategy player can follow depending on available energy
+        """
+        if ((self.getCapToBuy > 0)):
+            pstrategies = [-1] # Buy
+        elif ((self.getCapForSale > 0)&(self.b + self.getCapForSale > self.max_storage)):
+            pstrategies = [1] #Sell
+        elif (self.getCapForSale > 0):
+            pstrategies = [1,0] #Sell or Store
+        return pstrategies
+
     def getCapForSale(self) -> float:
+        """
+        Get the amount that can be sold (including battery)
+        """
+        self.selling = 0 if self.p - self.c <= 0 else self.p - self.c + self.getAvStor()
         return self.selling
+
     def _updateCapForSale(self):
         #more logic here
         self.selling = 0
@@ -38,8 +59,20 @@ class Player():
         if self.unused > 0:
             self.selling += self.unused
             self.unused = 0
+
     def getCapToBuy(self) -> float:
+        """
+        Get the amount needed to buy (including using battery)
+        """
+        self.buying = 0 if self.c - self.p <= 0 else self.c - self.p - self.getAvStor()
         return self.buying
+
+    def getAvStor(self) -> float:
+        """
+        Get the available storage
+        """
+        return 0 if self.b - self.blackout <= 0 else self.b - self.blackout
+
     def _updateCapToBuy(self):
         #model logic calls here
         self.buying = 0
@@ -98,6 +131,7 @@ class Player():
         #might be needed here
         self.selling = 0 # sold everything
         self._updateCapToBuy()
+
     def buy(self,amount:float,micro: bool) -> float:
         #TODO CONNECT MODEL HERE
         #THIS IS JUST A DEMO LOGIC
