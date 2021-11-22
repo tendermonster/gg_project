@@ -25,6 +25,20 @@ class Microgrid():
             if sale>0:
                 totalSupply += sale
         return totalSupply
+    
+    def distSelling(self) -> np.array():
+        """
+        Distributes how much each player selling sells to the microgrid
+        """
+        amountSell = np.array([])
+        return amountSell
+    def distBuying(self) -> np.array():
+        """
+        Distributes how much each player buying buys from microgrid
+        """
+        amountBuy = np.array([])
+        return amountBuy
+        
     def getStorageToBuy(self):
         totalyDamand = 0
         i : Player
