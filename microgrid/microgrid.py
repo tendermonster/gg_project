@@ -13,10 +13,9 @@ class Microgrid():
         self.n = n
         self.players = []
         for i in range(n):
-            self.players.append(Player(self,i,2))
-        for i in self.players:
-            i.step()
+            self.players.append(Player(self,i,Player.States.STORING))            
 
+    #tested
     def getStorageForSale(self):
         totalSupply = 0
         i : Player
@@ -26,7 +25,7 @@ class Microgrid():
                 totalSupply += sale
         return totalSupply
     
-    def amnt_SellBuy(self) -> np.array:
+    def amount_SellBuy(self) -> np.array:
         """
         Distributes how much each player selling/buying sells/buy to the microgrid
         Returns the array of $ transactions for each player
@@ -52,6 +51,7 @@ class Microgrid():
         diff_buy = np.zeros(amnt_buying.shape[0])
         diff_sell = np.zeros(amnt_selling.shape[0])
 
+        # buy from the players that sell their storage
         if self.getStorageForSale() > self.getStorageToBuy():
             each_sell = self.getStorageToBuy()/np.count_nonzero(amnt_selling)        
             _s = self.getStorageToBuy()
@@ -60,6 +60,7 @@ class Microgrid():
                 each_sell = _s/np.count_nonzero(amnt_selling[amnt_selling > each_sell])
             diff_sell[np.where(amnt_selling > each_sell)] = amnt_selling[np.where(amnt_selling > each_sell)] - each_sell
             amnt_selling[np.where(amnt_selling > each_sell)] = each_sell
+        
         elif self.getStorageForSale() < self.getStorageToBuy():
             each_buy = self.getStorageForSale()/np.count_nonzero(amnt_buying)        
             _b = self.getStorageForSale()
@@ -79,7 +80,7 @@ class Microgrid():
             self.BUY_MICRO*_aramnt_buying - self.BUY_MAIN*_ardiff_buy
         return total_transac
     
-    def amnt_gainStorage(self):
+    def amount_gainStorage(self):
         """
         Returns the utility of storaging if overflows, go to main grid
         """
@@ -107,14 +108,9 @@ class Microgrid():
         total_utstoring = self.SELL_MAIN*amnt_tomaingrid + stgain*amnt_storing
         return total_utstoring
 
-
+    #tested
     def getStorageToBuy(self) -> float:
-        totalyDamand = 0
-        i : Player
-        for i in self.players:
-            damand = i.getCapToBuy()
-            if damand>0:
-                totalyDamand += damand
+        totalyDamand = np.sum([i.getCapToBuy() for i in self.players])
         return totalyDamand
 
     def getTotalP(self):
