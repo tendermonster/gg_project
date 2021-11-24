@@ -30,16 +30,14 @@ class Player():
         return self.id == other.id
     def __ne__(self,other):
         return self.id != other.id
-
+    
     def possible_strategies(self) -> list:
         """
         Possible strategy player can follow depending on available energy
         """
-        if ((self.getCapToBuy > 0)):
+        if ((self.getCapToBuy() > 0)):
             pstrategies = [-1] # Buy
-        elif ((self.getCapForSale > 0)&(self.b + self.getCapForSale > self.max_storage)):
-            pstrategies = [1] #Sell
-        elif (self.getCapForSale > 0):
+        elif (self.getCapForSale() > 0):
             pstrategies = [1,0] #Sell or Store
         return pstrategies
 

@@ -1,4 +1,6 @@
 from microgrid.microgrid import Microgrid
+import gt
+
 def start():
     m = Microgrid(5)
     for i in range(1):
@@ -10,3 +12,8 @@ def start():
 
 if __name__ == "__main__":
     start()
+
+m = Microgrid(5)
+gt.comb_strategies(m)
+gt.utility_function(m,(1, -1, 1, -1, 1))
+gt.strategies_utilities(m)
