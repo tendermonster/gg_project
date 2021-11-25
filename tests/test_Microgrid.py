@@ -1,8 +1,8 @@
-from microgrid.microgrid import Microgrid
-import unittest
 import sys
 import os
 sys.path.append(os.path.abspath("."))
+from microgrid.microgrid import Microgrid
+import unittest
 import numpy as np
 
 class TestMicrogridClass(unittest.TestCase):

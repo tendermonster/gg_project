@@ -1,8 +1,9 @@
-from microgrid.player import Player
-import unittest
 import sys
 import os
 sys.path.append(os.path.abspath("."))
+from microgrid.player import Player
+from microgrid.microgrid import Microgrid
+import unittest
 
 class TestPlayerClass(unittest.TestCase):
 
@@ -36,6 +37,10 @@ class TestPlayerClass(unittest.TestCase):
         p2_buy_should = abs(20-20+70-80)
         p2_buy_is = self.p2.getCapToBuy()
         self.assertTrue(p2_buy_should == p2_buy_is)
+    def testBuyStrategie(self):
+        m = Microgrid(n = 5)
+        p0 = m.players[0]
+        p0.step()
 
 if __name__ == '__main__':
     unittest.main()
