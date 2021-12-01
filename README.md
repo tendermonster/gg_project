@@ -12,6 +12,9 @@ very nice
 ## task 1
   * start writing overleaf paper  5-8 pages + references to papers 
 ## task 2
-  * fix the code so that logic works well also that storage works well aswell
+  * make other strategies -> always sell (storage full first/storage at mininum)
+  * -> always buy (always buy will storage is full)
+  * -> stragegy buy full battery and then discharge and buy again
+  * -> IMPORTANT when using available storage is cheaper use it first before selling ??? 
 ## task 3
   * results, comparasons, graphs, rest...
