@@ -26,10 +26,10 @@ class Strategy:
             STORAGE = 2
             table = np.array(
                 [
-                    # buy,sell
+                    # buy #sell
                     [1, 0.5],  # Main
                     [0.8, 0.8],  # Micro
-                    [0, 0],
+                    [0, 0],  # Storing
                 ]
             )  # Storage
             if SELLING in s:

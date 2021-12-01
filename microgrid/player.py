@@ -65,6 +65,8 @@ class Player:
         if self.unused > 0:
             self.selling += self.unused
             self.unused = 0
+        if self.unused < 0:
+            raise Exception("wtf")
 
     # tested
     def getCapToBuy(self) -> float:
@@ -225,6 +227,7 @@ class Player:
             self.c = 100 * random.random()
         self.unused = self.p - self.c
         self.p, self.c = 0, 0  # maybe do not delete but
+        # safeguard agains the blackout 
         self.unused = self._updateStorage(self.unused)
         self._updateCapToBuy()
         self._updateCapForSale()
