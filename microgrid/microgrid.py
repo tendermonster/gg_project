@@ -1,4 +1,5 @@
 from microgrid.player import Player
+from microgrid.strategy import Strategy
 import numpy as np
 
 
@@ -11,12 +12,12 @@ class Microgrid:
     STORE_BUY = 0
     STORE_SELL = 0
 
-    def __init__(self, n):
+    def __init__(self, n, strategy: Strategy):
         self.day = 0
         self.n = n
         self.players = []
         for i in range(n):
-            self.players.append(Player(self, i, Player.States.STORING))
+            self.players.append(Player(self, i, state=Player.States.STORING,strategy=strategy))
 
     # tested
     def getStorageForSale(self):

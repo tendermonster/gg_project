@@ -3,13 +3,16 @@ import os
 
 sys.path.append(os.path.abspath("."))
 from microgrid.microgrid import Microgrid
+from microgrid.strategy import Strategy
 import unittest
 import numpy as np
 
 
 class TestMicrogridClass(unittest.TestCase):
     def setUp(self):
-        self.m = Microgrid(n=10)
+        self.str = Strategy(Strategy.Choice.GT)
+        self.m = Microgrid(n=10,strategy=self.str)
+        
 
     def test_total_storage_for_sale(self):
         p = self.m.players

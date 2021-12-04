@@ -13,7 +13,7 @@ class Player:
     blackout = 20
     max_storage = 150
     # tested
-    def __init__(self, grid, id, state, p=100, c=100, b=100, randomize=True):
+    def __init__(self, grid, id, state,strategy:Strategy, p=100, c=100, b=100, randomize=True):
         random.seed(id)
         self.money = 1000
         self.grid = grid  # Microgrid object
@@ -26,7 +26,7 @@ class Player:
             self.p = p
             self.c = c
             self.b = b
-        self.strategy = Strategy(Strategy.Choice.GT)
+        self.strategy = strategy
         """
         State: 0 - Selling, 1 - Buying, 2- Storage, 3 - do nothing
         """
@@ -148,6 +148,7 @@ class Player:
                 return [self.States.SELLING] # Sell
             elif self.getCapForSale() == 0:
                 return [self.States.DO_NOTHING] # C = P and b = blackout, do nothing
+        return [self.States.DO_NOTHING] # do nothing
 
     def sell(self, amount: float, micro: bool) -> float:
         left = amount
