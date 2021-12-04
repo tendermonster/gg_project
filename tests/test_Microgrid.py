@@ -11,8 +11,7 @@ import numpy as np
 class TestMicrogridClass(unittest.TestCase):
     def setUp(self):
         self.str = Strategy(Strategy.Choice.GT)
-        self.m = Microgrid(n=10,strategy=self.str)
-        
+        self.m = Microgrid(n=10, strategy=self.str)
 
     def test_total_storage_for_sale(self):
         p = self.m.players

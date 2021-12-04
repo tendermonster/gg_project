@@ -16,8 +16,18 @@ class Microgrid:
         self.day = 0
         self.n = n
         self.players = []
-        for i in range(n):
-            self.players.append(Player(self, i, state=Player.States.STORING,strategy=strategy))
+        if strategy is None:
+            for i in range(n):
+                random_s = np.round(np.random.uniform(0, 2))
+                strategy = Strategy(choice=random_s)
+                self.players.append(
+                    Player(self, i, state=Player.States.STORING, strategy=strategy)
+                )
+        else:
+            for i in range(n):
+                self.players.append(
+                    Player(self, i, state=Player.States.STORING, strategy=strategy)
+                )
 
     # tested
     def getStorageForSale(self):

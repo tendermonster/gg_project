@@ -13,7 +13,9 @@ class Player:
     blackout = 20
     max_storage = 150
     # tested
-    def __init__(self, grid, id, state,strategy:Strategy, p=100, c=100, b=100, randomize=True):
+    def __init__(
+        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
+    ):
         random.seed(id)
         self.money = 1000
         self.grid = grid  # Microgrid object
@@ -44,10 +46,6 @@ class Player:
     def __ne__(self, other):
         return self.id != other.id
 
-    # change strategy
-    def setStrategy(self, strategy: Strategy):
-        self.strategy = strategy
-
     # tested
     def getCapForSale(self) -> float:
         """
@@ -59,7 +57,7 @@ class Player:
     def _updateCapForSale(self):
         # more logic here
         self.selling = 0
-        remaining =  self.getAvailableStorage()
+        remaining = self.getAvailableStorage()
         if remaining > 0:
             self.selling = remaining
         if self.unused > 0:
@@ -94,8 +92,8 @@ class Player:
         """
         return self.b - self.blackout
 
-    def getFreeStorage(self) ->float:
-        """ Returns available storage room """
+    def getFreeStorage(self) -> float:
+        """Returns available storage room"""
         return self.max_storage - self.b
 
     # tested -> might need more testing
@@ -129,26 +127,26 @@ class Player:
         Possible strategy player can follow depending on available energy and macro strategy
         """
         # Common strategies of GT, Always Sell and Always Buy
-        if self.getCapForSale() > self.max_storage: # Player charged entirely battery
-                return [self.States.SELLING] # Only sell possible
+        if self.getCapForSale() > self.max_storage:  # Player charged entirely battery
+            return [self.States.SELLING]  # Only sell possible
         elif self.getCapToBuy() > 0:
-                return [self.States.BUYING]  # Buy
-        
+            return [self.States.BUYING]  # Buy
+
         # Sell or store depend on strategy
         if self.strategy.choice == Strategy.Choice.GT:
             if self.getCapForSale() > 0:
                 return [self.States.SELLING, self.States.STORING]  # Sell or Store
             elif self.getCapForSale() == 0:
-                return [self.States.DO_NOTHING] # C = P and b = blackout, do nothing
+                return [self.States.DO_NOTHING]  # C = P and b = blackout, do nothing
         elif self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
-            if self.getCapForSale() > 0:
-                return [self.States.STORING]  # Store
+            if self.getCapForSale() >= 0:
+                return [self.States.STORING]
         elif self.strategy.choice == Strategy.Choice.ALWAYS_SELL:
             if self.getCapForSale() > 0:
-                return [self.States.SELLING] # Sell
+                return [self.States.SELLING]  # Sell
             elif self.getCapForSale() == 0:
-                return [self.States.DO_NOTHING] # C = P and b = blackout, do nothing
-        return [self.States.DO_NOTHING] # do nothing
+                return [self.States.DO_NOTHING]  # C = P and b = blackout, do nothing
+        raise Exception("should not land here")
 
     def sell(self, amount: float, micro: bool) -> float:
         left = amount
@@ -222,6 +220,7 @@ class Player:
     def _apply_strategy(self, s):
         buying = self.States.BUYING
         selling = self.States.SELLING
+        storing = self.States.STORING
         if buying in s:
             # buy
             if s[buying] == self.States.MAIN_GRID:
@@ -230,7 +229,8 @@ class Player:
                 self.buy(amount=self.getCapToBuy(), micro=True)
             else:
                 # storing
-                pass
+                # TODO check if something comes in here
+                raise Exception("this usecase needs to be dealth with")
         elif selling in s:
             # selling
             if s[selling] == self.States.MAIN_GRID:
@@ -239,7 +239,20 @@ class Player:
                 self.sell(amount=self.getCapForSale(), micro=True)
             else:
                 # storing
-                pass
+                # TODO check if something comes in here
+                raise Exception("this usecase needs to be dealth with")
+        if storing in s:
+            "if here than must be something for sell"
+            "define logic here"
+            forSale = self.getCapForSale()
+            left = 0
+            if forSale > 0:
+                self.unused = self._updateStorage(forSale)
+                if self.unused > 0:
+                    self.sell(amount=self.unused, micro=True)
+                    self.unused = 0
+                self._updateCapToBuy()
+                self._updateCapForSale()
 
     def update_parameters(self):
         # update buy sell parameters
@@ -248,7 +261,7 @@ class Player:
             self.c = 100 * random.random()
         self.unused = self.p - self.c
         self.p, self.c = 0, 0  # maybe do not delete but
-        # safeguard agains the blackout 
+        # safeguard agains the blackout
         self.unused = self._updateStorage(self.unused)
         self._updateCapToBuy()
         self._updateCapForSale()
