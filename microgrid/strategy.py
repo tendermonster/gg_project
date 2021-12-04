@@ -53,7 +53,7 @@ class Strategy:
                 # buy #sell
                 [1, 0.5],  # Main
                 [0.8, 0.8],  # Micro
-                [0, 0],  # Storage
+                [0, 0.65],  # Storage
             ]
         )
         return self._chooseoptimum(s, table)

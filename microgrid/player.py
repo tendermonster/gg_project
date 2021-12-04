@@ -139,8 +139,10 @@ class Player:
             elif self.getCapForSale() == 0:
                 return [self.States.DO_NOTHING]  # C = P and b = blackout, do nothing
         elif self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
-            if self.getCapForSale() >= 0:
+            if self.getCapForSale() > 0:
                 return [self.States.STORING]
+            else:
+                return [self.States.DO_NOTHING]
         elif self.strategy.choice == Strategy.Choice.ALWAYS_SELL:
             if self.getCapForSale() > 0:
                 return [self.States.SELLING]  # Sell
@@ -177,10 +179,19 @@ class Player:
             self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
         # sell to grid the rest
         self.money += left * self.grid.AVG * self.grid.SELL_MAIN
-        # might be needed here
-        self._updateStorage(-amount)
+        # THIS IS A BUG FIX FOR TOO MUCH BATTERY DISCHARGING WHEN THAT IT SHOULD BE
+        if (
+            self.selling == amount and self.selling > self.getAvailableStorage()
+        ):  # means selling available storage !!
+            available = self.getAvailableStorage()
+            self._updateStorage(-available)
+        elif self.selling > amount:  # means selling difference after STORING
+            pass
+        else:  # means selling from battery only !
+            self._updateStorage(-amount)
         self._updateCapForSale()
         self._updateCapToBuy()
+        return 0
 
     def buy(self, amount: float, micro: bool) -> float:
         # in this case the amount will be bought fully
@@ -212,7 +223,6 @@ class Player:
             self._updateStorage(bought)
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
-        unused = self._updateStorage(left)
         # might be needed here
         self._updateCapToBuy()
         self._updateCapForSale()
@@ -244,15 +254,13 @@ class Player:
         if storing in s:
             "if here than must be something for sell"
             "define logic here"
+            # sell only when battery is fully charged
+            # storing will be automatic otherwise
             forSale = self.getCapForSale()
-            left = 0
-            if forSale > 0:
-                self.unused = self._updateStorage(forSale)
-                if self.unused > 0:
-                    self.sell(amount=self.unused, micro=True)
-                    self.unused = 0
-                self._updateCapToBuy()
-                self._updateCapForSale()
+            max_available = self.max_storage - self.blackout
+            if forSale > max_available:
+                diff = forSale - max_available
+                self.sell(amount=diff, micro=True)
 
     def update_parameters(self):
         # update buy sell parameters

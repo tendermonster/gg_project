@@ -1,6 +1,7 @@
 from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def start():
@@ -10,13 +11,13 @@ def start():
     for i in range(500):
         m.step()
     print("Money for players")
-    cash = []
+    cash1 = []
     for i in m.players:
-        cash.append(i.money)
-        print("Player {} has:".format(i.id) + " " + str(i.money))
+        cash1.append(i.money)
+        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("random strategies for players")
-    plt.hist(cash, bins=len(cash))
+    plt.hist(cash1, bins=len(cash1))
     # ----------------------------
     # using strategy GT
     s = Strategy(choice=Strategy.Choice.GT)
@@ -24,13 +25,13 @@ def start():
     for i in range(500):
         m.step()
     print("Money for players")
-    cash = []
+    cash2 = []
     for i in m.players:
-        cash.append(i.money)
-        print("Player {} has:".format(i.id) + " " + str(i.money))
+        cash2.append(i.money)
+        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("strategy GT")
-    plt.hist(cash, bins=len(cash))
+    plt.hist(cash2, bins=len(cash2))
     # ----------------------------
     # using strategy always buy
     s = Strategy(choice=Strategy.Choice.ALWAYS_BUY)
@@ -38,13 +39,13 @@ def start():
     for i in range(500):
         m.step()
     print("Money for players")
-    cash = []
+    cash3 = []
     for i in m.players:
-        cash.append(i.money)
+        cash3.append(i.money)
         print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("strategy always buy")
-    plt.hist(cash, bins=len(cash))
+    plt.hist(cash3, bins=len(cash3))
     # ----------------------------
     # using strategy always sell
     s = Strategy(choice=Strategy.Choice.ALWAYS_SELL)
@@ -52,14 +53,21 @@ def start():
     for i in range(500):
         m.step()
     print("Money for players")
-    cash = []
+    cash4 = []
     for i in m.players:
-        cash.append(i.money)
-        print("Player {} has:".format(i.id) + " " + str(i.money))
+        cash4.append(i.money)
+        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("strategy always sell")
-    plt.hist(cash, bins=len(cash))
+    plt.hist(cash4, bins=len(cash4))
     # ----------------------------
+    # how did they perform
+    print("Performance mean savings")
+    print("Strategy random: {mean} ".format(mean=np.mean(cash1)))
+    print("Strategy gt: {mean} ".format(mean=np.mean(cash2)))
+    print("Strategy buy: {mean} ".format(mean=np.mean(cash3)))
+    print("Strategy sell: {mean} ".format(mean=np.mean(cash4)))
+
     plt.show()
 
 
