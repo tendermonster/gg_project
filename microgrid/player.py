@@ -59,7 +59,7 @@ class Player:
     def _updateCapForSale(self):
         # more logic here
         self.selling = 0
-        remaining = self.b - self.blackout
+        remaining =  self.getAvailableStorage()
         if remaining > 0:
             self.selling = remaining
         if self.unused > 0:
@@ -75,7 +75,7 @@ class Player:
         """
         return self.buying
 
-    # tested
+    # tested > Need to test always buy
     def _updateCapToBuy(self):
         self.buying = 0
         remaining = self.getAvailableStorage()
@@ -84,6 +84,8 @@ class Player:
         if self.unused < 0:
             self.buying += abs(self.unused)
             self.unused = 0
+        if self.strategy == Strategy.Choice.ALWAYS_BUY:
+            self.buying += self.getFreeStorage()
 
     # tested
     def getAvailableStorage(self) -> float:
@@ -91,6 +93,10 @@ class Player:
         Get the available storage
         """
         return self.b - self.blackout
+
+    def getFreeStorage(self) ->float:
+        """ Returns available storage room """
+        return self.max_storage - self.b
 
     # tested -> might need more testing
     def _updateStorage(self, amount: float) -> None:
@@ -120,14 +126,28 @@ class Player:
 
     def possible_strategies(self) -> list:
         """
-        Possible strategy player can follow depending on available energy
+        Possible strategy player can follow depending on available energy and macro strategy
         """
-        strategies = []
-        if self.getCapToBuy() > 0:
-            return [self.States.BUYING]  # Buy
-        elif self.getCapForSale() > 0:
-            strategies = [self.States.SELLING, self.States.STORING]  # Sell or Store
-        return strategies
+        # Common strategies of GT, Always Sell and Always Buy
+        if self.getCapForSale() > self.max_storage: # Player charged entirely battery
+                return [self.States.SELLING] # Only sell possible
+        elif self.getCapToBuy() > 0:
+                return [self.States.BUYING]  # Buy
+        
+        # Sell or store depend on strategy
+        if self.strategy.choice == Strategy.Choice.GT:
+            if self.getCapForSale() > 0:
+                return [self.States.SELLING, self.States.STORING]  # Sell or Store
+            elif self.getCapForSale() == 0:
+                return [self.States.DO_NOTHING] # C = P and b = blackout, do nothing
+        elif self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
+            if self.getCapForSale() > 0:
+                return [self.States.STORING]  # Store
+        elif self.strategy.choice == Strategy.Choice.ALWAYS_SELL:
+            if self.getCapForSale() > 0:
+                return [self.States.SELLING] # Sell
+            elif self.getCapForSale() == 0:
+                return [self.States.DO_NOTHING] # C = P and b = blackout, do nothing
 
     def sell(self, amount: float, micro: bool) -> float:
         left = amount
@@ -240,7 +260,7 @@ class Player:
         if self.grid is not None:
             s = self.possible_strategies()
             bestStrategy = self.strategy.utility(s, self.grid)
-            if len(s) != 0:
+            if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
         self.update_parameters()
