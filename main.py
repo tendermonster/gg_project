@@ -5,10 +5,13 @@ import numpy as np
 
 
 def start():
+    n_players = 5
+    days = 1000
+
     # using random strategies for players
-    n_players = 20
+
     m = Microgrid(n_players, None)
-    for i in range(500):
+    for i in range(days):
         m.step()
     print("Money for players")
     cash1 = []
@@ -22,7 +25,7 @@ def start():
     # using strategy GT
     s = Strategy(choice=Strategy.Choice.GT)
     m = Microgrid(n_players, s)
-    for i in range(500):
+    for i in range(days):
         m.step()
     print("Money for players")
     cash2 = []
@@ -33,10 +36,11 @@ def start():
     plt.title("strategy GT")
     plt.hist(cash2, bins=len(cash2))
     # ----------------------------
+
     # using strategy always buy
     s = Strategy(choice=Strategy.Choice.ALWAYS_BUY)
     m = Microgrid(n_players, s)
-    for i in range(500):
+    for i in range(days):
         m.step()
     print("Money for players")
     cash3 = []
@@ -50,7 +54,7 @@ def start():
     # using strategy always sell
     s = Strategy(choice=Strategy.Choice.ALWAYS_SELL)
     m = Microgrid(n_players, s)
-    for i in range(500):
+    for i in range(days):
         m.step()
     print("Money for players")
     cash4 = []
@@ -67,7 +71,6 @@ def start():
     print("Strategy gt: {mean} ".format(mean=np.mean(cash2)))
     print("Strategy buy: {mean} ".format(mean=np.mean(cash3)))
     print("Strategy sell: {mean} ".format(mean=np.mean(cash4)))
-
     plt.show()
 
 

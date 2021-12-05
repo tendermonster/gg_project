@@ -59,6 +59,11 @@ class Player:
         self.selling = 0
         remaining = self.getAvailableStorage()
         if remaining > 0:
+            if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
+                if self.unused > 0:
+                    self.selling = self.unused
+                    self.unused = 0
+                return # do not do nothing here
             self.selling = remaining
         if self.unused > 0:
             self.selling += self.unused
@@ -79,11 +84,12 @@ class Player:
         remaining = self.getAvailableStorage()
         if remaining < 0:
             self.buying = abs(remaining)
+            remaining = 0
         if self.unused < 0:
             self.buying += abs(self.unused)
             self.unused = 0
-        if self.strategy == Strategy.Choice.ALWAYS_BUY:
-            self.buying += self.getFreeStorage()
+        if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
+            self.buying += self.max_storage - self.buying - remaining - self.blackout
 
     # tested
     def getAvailableStorage(self) -> float:
@@ -91,10 +97,6 @@ class Player:
         Get the available storage
         """
         return self.b - self.blackout
-
-    def getFreeStorage(self) -> float:
-        """Returns available storage room"""
-        return self.max_storage - self.b
 
     # tested -> might need more testing
     def _updateStorage(self, amount: float) -> None:
@@ -188,7 +190,10 @@ class Player:
         elif self.selling > amount:  # means selling difference after STORING
             pass
         else:  # means selling from battery only !
-            self._updateStorage(-amount)
+            if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
+                pass # exception here for ALWAYS_BUY. if so than u only sell
+            else:
+                self._updateStorage(-amount)
         self._updateCapForSale()
         self._updateCapToBuy()
         return 0
@@ -224,6 +229,7 @@ class Player:
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
         # might be needed here
+        self.unused += self._updateStorage(amount)
         self._updateCapToBuy()
         self._updateCapForSale()
 
@@ -261,6 +267,8 @@ class Player:
             if forSale > max_available:
                 diff = forSale - max_available
                 self.sell(amount=diff, micro=True)
+            if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
+                self.sell(amount=forSale, micro=True)
 
     def update_parameters(self):
         # update buy sell parameters
