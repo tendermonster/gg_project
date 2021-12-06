@@ -14,7 +14,8 @@ class Player:
     max_storage = 150
     # tested
     def __init__(
-        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
+        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True, 
+        step_random = True
     ):
         random.seed(id)
         self.money = 1000
@@ -28,6 +29,14 @@ class Player:
             self.p = p
             self.c = c
             self.b = b
+        
+        if not step_random: # Don't change p and c in step
+            self.keep_p = self.p
+            self.keep_c = self.c
+        else:
+            self.keep_p = None
+            self.keep_c = None
+        self.step_random = step_random
         self.strategy = strategy
         """
         State: 0 - Selling, 1 - Buying, 2- Storage, 3 - do nothing
@@ -271,10 +280,17 @@ class Player:
                 self.sell(amount=forSale, micro=True)
 
     def update_parameters(self):
-        # update buy sell parameters
-        if self.p == 0 and self.c == 0:
-            self.p = 100 * random.random()
-            self.c = 100 * random.random()
+        if self.step_random:
+            # update buy sell parameters
+            if self.p == 0 and self.c == 0:
+                self.p = 100 * random.random()
+                self.c = 100 * random.random()
+                self.keep_c = self.c
+                self.keep_p = self.p
+        else:
+            # keep from day 0
+            self.p = self.keep_p
+            self.c = self.keep_c
         self.unused = self.p - self.c
         self.p, self.c = 0, 0  # maybe do not delete but
         # safeguard agains the blackout

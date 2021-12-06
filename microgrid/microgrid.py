@@ -1,5 +1,6 @@
 from microgrid.player import Player
 from microgrid.strategy import Strategy
+import views
 import numpy as np
 
 
@@ -12,7 +13,7 @@ class Microgrid:
     STORE_BUY = 0
     STORE_SELL = 0
 
-    def __init__(self, n, strategy: Strategy):
+    def __init__(self, n, strategy: Strategy, step_random = True):
         self.day = 0
         self.n = n
         self.players = []
@@ -21,12 +22,12 @@ class Microgrid:
                 random_s = np.round(np.random.uniform(0, 2))
                 strategy = Strategy(choice=random_s)
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy, step_random = step_random)
                 )
         else:
             for i in range(n):
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy, step_random = step_random)
                 )
 
     # tested
@@ -72,9 +73,11 @@ class Microgrid:
                         break
         return left
 
-    def step(self) -> None:
+    def step(self) -> dict:
         self.day += 1
         for i in self.players:
             i.update_parameters()
         for i in self.players:
             i.step()
+        series = views.register_stepseries(self)
+        return series

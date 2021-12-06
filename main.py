@@ -1,18 +1,25 @@
 from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
+import views
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 def start():
     n_players = 5
-    days = 1000
-
+    days = 10
+    step_random = False # p and c don't change each step
     # using random strategies for players
-
-    m = Microgrid(n_players, None)
+    m = Microgrid(n_players, None, step_random = step_random)
+    print(views.initial_playermatrix(m))
+    total_series = views.register_stepseries(m) # initial
     for i in range(days):
-        m.step()
+        step_series = m.step()
+        total_series = views.series_append(total_series,step_series)
+    print(total_series['money'])
+    print(total_series['b'])
+    print(total_series['c'])
+    print(total_series['p'])
     print("Money for players")
     cash1 = []
     for i in m.players:
@@ -24,7 +31,7 @@ def start():
     # ----------------------------
     # using strategy GT
     s = Strategy(choice=Strategy.Choice.GT)
-    m = Microgrid(n_players, s)
+    m = Microgrid(n_players, s, step_random = step_random)
     for i in range(days):
         m.step()
     print("Money for players")
@@ -39,7 +46,7 @@ def start():
 
     # using strategy always buy
     s = Strategy(choice=Strategy.Choice.ALWAYS_BUY)
-    m = Microgrid(n_players, s)
+    m = Microgrid(n_players, s, step_random = step_random)
     for i in range(days):
         m.step()
     print("Money for players")
@@ -53,7 +60,7 @@ def start():
     # ----------------------------
     # using strategy always sell
     s = Strategy(choice=Strategy.Choice.ALWAYS_SELL)
-    m = Microgrid(n_players, s)
+    m = Microgrid(n_players, s, step_random = step_random)
     for i in range(days):
         m.step()
     print("Money for players")
