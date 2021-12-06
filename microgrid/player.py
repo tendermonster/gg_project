@@ -14,13 +14,13 @@ class Player:
     max_storage = 150
     # tested
     def __init__(
-        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True, 
-        step_random = True
+        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
     ):
         random.seed(id)
         self.money = 1000
         self.grid = grid  # Microgrid object
         self.id = id
+        self.randomize = randomize
         if randomize:
             self.p = p * random.random()
             self.c = c * random.random()
@@ -29,14 +29,8 @@ class Player:
             self.p = p
             self.c = c
             self.b = b
-        
-        if not step_random: # Don't change p and c in step
-            self.keep_p = self.p
-            self.keep_c = self.c
-        else:
-            self.keep_p = None
-            self.keep_c = None
-        self.step_random = step_random
+            self.keep_c = c
+            self.keep_p = p
         self.strategy = strategy
         """
         State: 0 - Selling, 1 - Buying, 2- Storage, 3 - do nothing
@@ -72,7 +66,7 @@ class Player:
                 if self.unused > 0:
                     self.selling = self.unused
                     self.unused = 0
-                return # do not do nothing here
+                return  # do not do nothing here
             self.selling = remaining
         if self.unused > 0:
             self.selling += self.unused
@@ -200,7 +194,7 @@ class Player:
             pass
         else:  # means selling from battery only !
             if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
-                pass # exception here for ALWAYS_BUY. if so than u only sell
+                pass  # exception here for ALWAYS_BUY. if so than u only sell
             else:
                 self._updateStorage(-amount)
         self._updateCapForSale()
@@ -280,13 +274,15 @@ class Player:
                 self.sell(amount=forSale, micro=True)
 
     def update_parameters(self):
-        if self.step_random:
+        if self.randomize:
             # update buy sell parameters
             if self.p == 0 and self.c == 0:
                 self.p = 100 * random.random()
                 self.c = 100 * random.random()
                 self.keep_c = self.c
                 self.keep_p = self.p
+            self.keep_c = self.c
+            self.keep_p = self.p
         else:
             # keep from day 0
             self.p = self.keep_p

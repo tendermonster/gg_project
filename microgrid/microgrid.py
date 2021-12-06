@@ -13,7 +13,7 @@ class Microgrid:
     STORE_BUY = 0
     STORE_SELL = 0
 
-    def __init__(self, n, strategy: Strategy, step_random = True):
+    def __init__(self, n, strategy: Strategy, randomize = True):
         self.day = 0
         self.n = n
         self.players = []
@@ -22,12 +22,12 @@ class Microgrid:
                 random_s = np.round(np.random.uniform(0, 2))
                 strategy = Strategy(choice=random_s)
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy, step_random = step_random)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy, randomize=randomize)
                 )
         else:
             for i in range(n):
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy, step_random = step_random)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy, randomize=randomize)
                 )
 
     # tested
