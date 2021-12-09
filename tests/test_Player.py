@@ -76,7 +76,8 @@ class TestPlayerClass(unittest.TestCase):
         p0.step()
 
     def testBoughtSoldInsideMicro(self):
-        m = Microgrid(n=10, strategy=None, randomize=False)
+        strategy = Strategy(choice=0)
+        m = Microgrid(n=10, strategy=strategy, randomize=False)
         for i in range(20):
             m.step()
         total_bought = np.sum([i.bought_micro for i in m.players])
@@ -84,7 +85,8 @@ class TestPlayerClass(unittest.TestCase):
         diff = abs(total_bought - total_sold)
         self.assertTrue(diff < 0.5)
     def testBoughtSoldInsideMicroEachStep(self):
-        m = Microgrid(n=10, strategy=None, randomize=False)
+        strategy = Strategy(choice=0)
+        m = Microgrid(n=10, strategy=strategy, randomize=False)
         for i in range(20):
             m.step()
             total_bought = np.sum([i.bought_micro for i in m.players])

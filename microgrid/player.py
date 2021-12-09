@@ -296,6 +296,7 @@ class Player:
                 self.c = 100 * random.random()
                 self.keep_c = self.c
                 self.keep_p = self.p
+            # dumb workaround haha just in case. this might not be needed here
             self.keep_c = self.c
             self.keep_p = self.p
         else:
@@ -320,7 +321,7 @@ class Player:
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
-        self.update_parameters()
+        #self.update_parameters()
 
     class States:
         SELLING = 0

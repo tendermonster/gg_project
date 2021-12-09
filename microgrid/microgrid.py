@@ -23,7 +23,7 @@ class Microgrid:
                 random_s = np.round(np.random.uniform(0, 2))
                 strategy = Strategy(choice=random_s)
                 random.seed(i)
-                if randomize == False:
+                if randomize == True:
                     p, c, b = 100* random.random(), 100* random.random(), 100* random.random()
                 else:
                     p, c, b = 100, 100, 100
