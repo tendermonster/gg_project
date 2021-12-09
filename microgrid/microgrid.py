@@ -92,7 +92,5 @@ class Microgrid:
         self.day += 1
         step_series = views.create_series()
         for i in self.players:
-            i.update_parameters()
-        for i in self.players:
             i.step()
         return step_series

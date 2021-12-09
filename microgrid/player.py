@@ -47,7 +47,7 @@ class Player:
         self.bought_main = 0
         self.sold_main = 0
 
-        self.update_parameters()
+        self._update_parameters()
 
     # tested
     def __eq__(self, other):
@@ -288,7 +288,7 @@ class Player:
             if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
                 self.sell(amount=forSale, micro=True)
 
-    def update_parameters(self):
+    def _update_parameters(self):
         if self.randomize:
             # update buy sell parameters
             if self.p == 0 and self.c == 0:
@@ -315,13 +315,13 @@ class Player:
         # update sell
         # TODO production should change depending on a day
         # decide on the strategy
+        self._update_parameters()
         if self.grid is not None:
             s = self.possible_strategies()
             bestStrategy = self.strategy.utility(s, self.grid)
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
-        #self.update_parameters()
 
     class States:
         SELLING = 0
