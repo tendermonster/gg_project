@@ -88,9 +88,7 @@ class Microgrid:
                         break
         return left
 
-    def step(self) -> dict:
+    def step(self):
         self.day += 1
-        step_series = views.create_series()
         for i in self.players:
             i.step()
-        return step_series

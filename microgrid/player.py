@@ -223,7 +223,6 @@ class Player:
                 left = amount - buying
                 self.bought_micro += buying
                 self.money -= buying * self.grid.AVG * self.grid.BUY_MICRO
-                self.bought_micro += buying
                 self._updateStorage(buying)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -232,7 +231,6 @@ class Player:
             if amount <= buying:
                 self.bought_micro += amount
                 self.money -= amount * self.grid.AVG * self.grid.BUY_MICRO
-                self.bought_micro += amount
                 self._updateStorage(amount)
                 self._updateCapForSale()
                 self._updateCapToBuy()
