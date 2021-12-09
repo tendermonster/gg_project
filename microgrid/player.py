@@ -2,6 +2,7 @@ from microgrid.strategy import Strategy
 import random
 import views
 
+
 class Player:
     """
     per day
@@ -14,8 +15,7 @@ class Player:
     max_storage = 150
     # tested
     def __init__(
-        self, grid, id, state, strategy: Strategy, p=100,
-            c=100, b=100, randomize=True
+        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
     ):
         random.seed(id)
         self.money = 1000
@@ -46,6 +46,7 @@ class Player:
         self.sold_micro = 0
         self.bought_main = 0
         self.sold_main = 0
+        self.battery_full = False
 
         self._update_parameters()
 
@@ -165,6 +166,8 @@ class Player:
     def sell(self, amount: float, micro: bool) -> float:
         left = amount
         # purchase is done from microgrid itself
+        if self.selling == 0:
+            return left
         if micro is None:
             # sold everything
             selling = self.getCapForSale()
@@ -172,7 +175,10 @@ class Player:
                 # those ifs might be a little bit error prone
                 self.sold_micro += amount
                 self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
-                self._updateStorage(-amount)
+                if self.battery_full:
+                    pass #selling from overflow of energy
+                else:
+                    self._updateStorage(-amount) # selling from battery
                 self._updateCapForSale()
                 self._updateCapToBuy()
                 return 0
@@ -181,6 +187,10 @@ class Player:
                 left = amount - selling
                 self.sold_micro += selling
                 self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
+                if self.battery_full:
+                    pass #selling from overflow of energy
+                else:
+                    self._updateStorage(-selling) # selling from battery
                 self._updateStorage(-selling)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -202,10 +212,16 @@ class Player:
             available = self.getAvailableStorage()
             self._updateStorage(-available)
         elif self.selling > amount:  # means selling difference after STORING
-            pass
+            if self.battery_full:
+                pass  # selling from charged battery
+            else:
+                raise Exception("this should not happen here")
         else:  # means selling from battery only !
             if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
-                pass  # exception here for ALWAYS_BUY. if so than u only sell
+                if self.battery_full:
+                    pass  # selling from already full battery so do not subtract the amount
+                else:
+                    self._updateStorage(-left)  # this should not happen
             else:
                 self._updateStorage(-amount)
         self._updateCapForSale()
@@ -247,7 +263,7 @@ class Player:
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
         self.bought_main += left
         # might be needed here
-        self.unused += self._updateStorage(amount)
+        self.unused += self._updateStorage(left)
         self._updateCapToBuy()
         self._updateCapForSale()
 
@@ -294,11 +310,6 @@ class Player:
             if self.p == 0 and self.c == 0:
                 self.p = 100 * random.random()
                 self.c = 100 * random.random()
-                self.keep_c = self.c
-                self.keep_p = self.p
-            # dumb workaround haha just in case. this might not be needed here
-            self.keep_c = self.c
-            self.keep_p = self.p
         else:
             # keep from day 0
             self.p = self.keep_p
@@ -307,6 +318,11 @@ class Player:
         self.p, self.c = 0, 0  # maybe do not delete but
         # safeguard agains the blackout
         self.unused = self._updateStorage(self.unused)
+        # workaround for selling problem
+        if self.unused > 0:
+            self.battery_full = True
+        else:
+            self.battery_full = False
         self._updateCapToBuy()
         self._updateCapForSale()
 
@@ -315,13 +331,13 @@ class Player:
         # update sell
         # TODO production should change depending on a day
         # decide on the strategy
-        self._update_parameters()
         if self.grid is not None:
             s = self.possible_strategies()
             bestStrategy = self.strategy.utility(s, self.grid)
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
+        self._update_parameters()
 
     class States:
         SELLING = 0
