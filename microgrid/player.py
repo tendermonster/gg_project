@@ -170,8 +170,8 @@ class Player:
             selling = self.getCapForSale()
             if amount < selling:
                 # those ifs might be a little bit error prone
-                self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
                 self.sold_micro += amount
+                self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
                 self._updateStorage(-amount)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -179,8 +179,8 @@ class Player:
             # sold partially
             if amount >= selling:
                 left = amount - selling
-                self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
                 self.sold_micro += selling
+                self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
                 self._updateStorage(-selling)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -190,8 +190,8 @@ class Player:
         if micro:
             left = self.grid.buy(amount, self)  # buy from grid
             sold = amount - left
-            self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
             self.sold_micro += sold
+            self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
         # sell to grid the rest
         self.money += left * self.grid.AVG * self.grid.SELL_MAIN
         self.sold_main += left
@@ -221,6 +221,7 @@ class Player:
             buying = self.getCapToBuy()
             if amount > buying:
                 left = amount - buying
+                self.bought_micro += buying
                 self.money -= buying * self.grid.AVG * self.grid.BUY_MICRO
                 self._updateStorage(buying)
                 self._updateCapForSale()
@@ -228,6 +229,7 @@ class Player:
                 return left
             # buy all
             if amount <= buying:
+                self.bought_micro += amount
                 self.money -= amount * self.grid.AVG * self.grid.BUY_MICRO
                 self._updateStorage(amount)
                 self._updateCapForSale()
@@ -238,12 +240,12 @@ class Player:
         if micro:
             left = self.grid.sell(amount, self)  # buy from grid
             bought = amount - left
+            self.bought_micro += bought
             self.money -= bought * self.grid.AVG * self.grid.BUY_MICRO
-            self.bought_micro += bought # Keep value for view
             self._updateStorage(bought)
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
-        self.bought_main += left # Keep valeu for view
+        self.bought_main += left
         # might be needed here
         self.unused += self._updateStorage(amount)
         self._updateCapToBuy()
@@ -318,9 +320,7 @@ class Player:
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
-        player_series = views.register_stepseries(self)
         self.update_parameters()
-        return player_series
 
     class States:
         SELLING = 0

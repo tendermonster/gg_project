@@ -7,29 +7,18 @@ import pandas as pd
 
 
 def start():
-    n_players = 5
-    days = 10
+    n_players = 10
+    days = 100
     randomize = False  # p and c don't change each step
     strategy = None
     # using random strategies for players
-    m = Microgrid(n_players, strategy = strategy, randomize=randomize)
-    total_series = views.initial_playermatrix(m)
-    print(pd.DataFrame.from_dict(total_series))
+    m = Microgrid(n_players, strategy=strategy, randomize=randomize)
     for i in range(days):
-        step_series = m.step()
-        total_series = views.series_append(total_series, step_series)
-    print("bought_micro: \n",total_series["bought_micro"])
-    print("sold_micro: \n",total_series["sold_micro"])
-    print("bought_micro_day:",np.sum(total_series["bought_micro"], axis = 1))
-    print("sold_micro_day:",np.sum(total_series["sold_micro"], axis = 1))
-    assert((np.sum(total_series['bought_micro'], axis = 1)
-         == np.sum(total_series['sold_micro'], axis = 1)).all())
-
+        m.step()
     print("Money for players")
     cash1 = []
     for i in m.players:
         cash1.append(i.money)
-        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("random strategies for players")
     plt.hist(cash1, bins=len(cash1))
@@ -43,7 +32,6 @@ def start():
     cash2 = []
     for i in m.players:
         cash2.append(i.money)
-        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("strategy GT")
     plt.hist(cash2, bins=len(cash2))
@@ -72,7 +60,6 @@ def start():
     cash4 = []
     for i in m.players:
         cash4.append(i.money)
-        # print("Player {} has:".format(i.id) + " " + str(i.money))
     plt.figure()
     plt.title("strategy always sell")
     plt.hist(cash4, bins=len(cash4))
