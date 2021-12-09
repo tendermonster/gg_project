@@ -18,10 +18,6 @@ def start():
     for i in range(days):
         step_series = m.step()
         total_series = views.series_append(total_series, step_series)
-    print("bought_micro: \n",total_series["bought_micro"])
-    print("sold_micro: \n",total_series["sold_micro"])
-    print("bought_micro_day:",np.sum(total_series["bought_micro"], axis = 1))
-    print("sold_micro_day:",np.sum(total_series["sold_micro"], axis = 1))
     assert((np.sum(total_series['bought_micro'], axis = 1)
          == np.sum(total_series['sold_micro'], axis = 1)).all())
 

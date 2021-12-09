@@ -39,7 +39,6 @@ class Strategy:
         if BUYING in s:
             # find smallest
             subtable = table[0:2, 0].flatten()  # No Storage
-            #subtable[-1] = np.Inf  # cannot buy from storage
             location = np.argwhere(subtable == np.amin(subtable))[0].flatten()
             return {BUYING: location}
 

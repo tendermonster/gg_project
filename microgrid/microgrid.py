@@ -93,10 +93,8 @@ class Microgrid:
         step_series = views.create_series()
         for i in self.players:
             i.update_parameters()
-            i.bought = 0
-            i.sold = 0
-            i.bought_main = 0
-            i.sold_main = 0
+            i.bought_micro, i.sold_micro = 0, 0
+            i.bought_main, i.sold_main = 0, 0
         for i in self.players:
             for k in step_series:
                 player_series = i.step()

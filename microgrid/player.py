@@ -222,6 +222,7 @@ class Player:
             if amount > buying:
                 left = amount - buying
                 self.money -= buying * self.grid.AVG * self.grid.BUY_MICRO
+                self.bought_micro += buying
                 self._updateStorage(buying)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -229,6 +230,7 @@ class Player:
             # buy all
             if amount <= buying:
                 self.money -= amount * self.grid.AVG * self.grid.BUY_MICRO
+                self.bought_micro += amount
                 self._updateStorage(amount)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -319,7 +321,6 @@ class Player:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
         player_series = views.register_stepseries(self)
-        self.update_parameters()
         return player_series
 
     class States:
