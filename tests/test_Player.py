@@ -33,6 +33,16 @@ class TestPlayerClass(unittest.TestCase):
             b=70,
             randomize=False,
         )
+        self.p2 = Player(
+            None,
+            2,
+            Player.States.DO_NOTHING,
+            strategy=self.str,
+            p=70,
+            c=80,
+            b=20,
+            randomize=False,
+        )
 
     def testEqualityOfPlayer(self):
         self.assertTrue(self.p0 == self.p0)
@@ -56,16 +66,6 @@ class TestPlayerClass(unittest.TestCase):
         self.assertTrue(self.p1.getCapToBuy() == p1_buy_should)
         self.assertTrue(self.p1.getCapForSale() == p1_sell_should)
         # testing a nice buy scenario
-        self.p2 = Player(
-            None,
-            2,
-            Player.States.DO_NOTHING,
-            strategy=self.str,
-            p=70,
-            c=80,
-            b=20,
-            randomize=False,
-        )
         p2_buy_should = abs(20 - 20 + 70 - 80)
         p2_buy_is = self.p2.getCapToBuy()
         self.assertTrue(p2_buy_should == p2_buy_is)
