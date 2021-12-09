@@ -1,6 +1,6 @@
 from microgrid.strategy import Strategy
 import random
-
+import views
 
 class Player:
     """
@@ -14,7 +14,8 @@ class Player:
     max_storage = 150
     # tested
     def __init__(
-        self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
+        self, grid, id, state, strategy: Strategy, p=100,
+            c=100, b=100, randomize=True
     ):
         random.seed(id)
         self.money = 1000
@@ -40,6 +41,12 @@ class Player:
         self.selling = 0
         self.buying = 0
         self.unused = 0
+
+        self.bought_micro = 0
+        self.sold_micro = 0
+        self.bought_main = 0
+        self.sold_main = 0
+
         self.update_parameters()
 
     # tested
@@ -182,8 +189,10 @@ class Player:
             left = self.grid.buy(amount, self)  # buy from grid
             sold = amount - left
             self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
+            self.sold_micro = sold
         # sell to grid the rest
         self.money += left * self.grid.AVG * self.grid.SELL_MAIN
+        self.sold_main = left
         # THIS IS A BUG FIX FOR TOO MUCH BATTERY DISCHARGING WHEN THAT IT SHOULD BE
         if (
             self.selling == amount and self.selling > self.getAvailableStorage()
@@ -228,9 +237,11 @@ class Player:
             left = self.grid.sell(amount, self)  # buy from grid
             bought = amount - left
             self.money -= bought * self.grid.AVG * self.grid.BUY_MICRO
+            self.bought_micro = bought # Keep value for view
             self._updateStorage(bought)
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
+        self.bought_main = left # Keep valeu for view
         # might be needed here
         self.unused += self._updateStorage(amount)
         self._updateCapToBuy()
@@ -305,7 +316,9 @@ class Player:
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
+        player_series = views.register_stepseries(self)
         self.update_parameters()
+        return player_series
 
     class States:
         SELLING = 0

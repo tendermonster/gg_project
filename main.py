@@ -3,23 +3,28 @@ from microgrid.strategy import Strategy
 import views
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 def start():
     n_players = 5
-    days = 1000
-    randomize = True  # p and c don't change each step
+    days = 10
+    randomize = False  # p and c don't change each step
+    strategy = Strategy(2)
     # using random strategies for players
-    m = Microgrid(n_players, None, randomize=randomize)
-    print(views.initial_playermatrix(m))
-    total_series = views.register_stepseries(m)  # initial
+    m = Microgrid(n_players, strategy = strategy, randomize=randomize)
+    total_series = views.initial_playermatrix(m)
+    print(pd.DataFrame.from_dict(total_series))
     for i in range(days):
         step_series = m.step()
         total_series = views.series_append(total_series, step_series)
-    print(total_series["money"])
-    print(total_series["b"])
-    print(total_series["c"])
-    print(total_series["p"])
+    print("bought_micro: \n",total_series["bought_micro"])
+    print("sold_micro: \n",total_series["sold_micro"])
+    print("bought_micro_day:",np.sum(total_series["bought_micro"], axis = 1))
+    print("sold_micro_day:",np.sum(total_series["sold_micro"], axis = 1))
+    assert((np.sum(total_series['bought_micro'], axis =1)
+         == np.sum(total_series['sold_micro'], axis = 1)).all())
+
     print("Money for players")
     cash1 = []
     for i in m.players:

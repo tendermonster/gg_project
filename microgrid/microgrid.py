@@ -1,5 +1,6 @@
 from microgrid.player import Player
 from microgrid.strategy import Strategy
+import random
 import views
 import numpy as np
 
@@ -21,13 +22,23 @@ class Microgrid:
             for i in range(n):
                 random_s = np.round(np.random.uniform(0, 2))
                 strategy = Strategy(choice=random_s)
+                random.seed(i)
+                if randomize == False:
+                    p, c, b = 100* random.random(), 100* random.random(), 100* random.random()
+                
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy, randomize=randomize)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy,
+                    p=p,c=c, b=b, randomize=randomize)
                 )
         else:
             for i in range(n):
+                random.seed(i)
+                if randomize == False:
+                    p, c, b = 100* random.random(), 100* random.random(), 100* random.random()
+                
                 self.players.append(
-                    Player(self, i, state=Player.States.STORING, strategy=strategy, randomize=randomize)
+                    Player(self, i, state=Player.States.STORING, strategy=strategy,
+                    p=p,c=c, b=b, randomize=randomize)
                 )
 
     # tested
@@ -75,9 +86,15 @@ class Microgrid:
 
     def step(self) -> dict:
         self.day += 1
+        step_series = views.create_series()
         for i in self.players:
             i.update_parameters()
+            i.bought = 0
+            i.sold = 0
+            i.bought_main = 0
+            i.sold_main = 0
         for i in self.players:
-            i.step()
-        series = views.register_stepseries(self)
-        return series
+            for k in step_series:
+                player_series = i.step()
+                step_series[k] = np.append(step_series[k], player_series[k])
+        return step_series
