@@ -190,7 +190,6 @@ class Player:
                     pass  # selling from overflow of energy
                 else:
                     self._updateStorage(-selling)  # selling from battery
-                self._updateStorage(-selling)
                 self._updateCapForSale()
                 self._updateCapToBuy()
                 return left
