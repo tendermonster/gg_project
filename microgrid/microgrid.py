@@ -1,7 +1,6 @@
 from microgrid.player import Player
 from microgrid.strategy import Strategy
 import random
-import views
 import numpy as np
 
 

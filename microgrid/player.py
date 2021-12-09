@@ -1,6 +1,5 @@
 from microgrid.strategy import Strategy
 import random
-import views
 
 
 class Player:
@@ -176,9 +175,9 @@ class Player:
                 self.sold_micro += amount
                 self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
                 if self.battery_full:
-                    pass #selling from overflow of energy
+                    pass  # selling from overflow of energy
                 else:
-                    self._updateStorage(-amount) # selling from battery
+                    self._updateStorage(-amount)  # selling from battery
                 self._updateCapForSale()
                 self._updateCapToBuy()
                 return 0
@@ -188,9 +187,9 @@ class Player:
                 self.sold_micro += selling
                 self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
                 if self.battery_full:
-                    pass #selling from overflow of energy
+                    pass  # selling from overflow of energy
                 else:
-                    self._updateStorage(-selling) # selling from battery
+                    self._updateStorage(-selling)  # selling from battery
                 self._updateStorage(-selling)
                 self._updateCapForSale()
                 self._updateCapToBuy()

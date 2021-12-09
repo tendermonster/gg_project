@@ -14,11 +14,23 @@ def initial_playermatrix(grid):
                 series[i] = np.append(series[i], getattr(player, i))
     return series
 
+
 def create_series():  # create series object
-    variables = ["id", "c", "p", "b", "money", "strategy",
-                "sold_micro", "bought_micro", "sold_main", "bought_main"]
-    series = {i:np.array([]) for i in variables}
+    variables = [
+        "id",
+        "c",
+        "p",
+        "b",
+        "money",
+        "strategy",
+        "sold_micro",
+        "bought_micro",
+        "sold_main",
+        "bought_main",
+    ]
+    series = {i: np.array([]) for i in variables}
     return series
+
 
 def register_stepseries(player):
     series = create_series()

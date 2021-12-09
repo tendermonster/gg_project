@@ -1,18 +1,15 @@
 from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
-import views
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 
 def start():
-    n_players = 10
+    n_players = 100
     days = 1000
     randomize = True  # p and c don't change each step
     strategy = None
     # using random strategies for players
-    """
     m = Microgrid(n_players, strategy=strategy, randomize=randomize)
     for i in range(days):
         m.step()
@@ -54,7 +51,6 @@ def start():
     plt.title("strategy GT")
     plt.hist(cash2, bins=len(cash2))
     # ----------------------------
-    """
 
     # using strategy always buy
     s = Strategy(choice=Strategy.Choice.ALWAYS_BUY)
@@ -76,7 +72,7 @@ def start():
     plt.figure()
     plt.title("strategy always buy")
     plt.hist(cash3, bins=len(cash3))
-    """
+
     # ----------------------------
     # using strategy always sell
     s = Strategy(choice=Strategy.Choice.ALWAYS_SELL)
@@ -106,7 +102,6 @@ def start():
     print("Strategy buy: {mean} ".format(mean=np.mean(cash3)))
     print("Strategy sell: {mean} ".format(mean=np.mean(cash4)))
     plt.show()
-    """
 
 
 if __name__ == "__main__":
