@@ -171,6 +171,7 @@ class Player:
             if amount < selling:
                 # those ifs might be a little bit error prone
                 self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
+                self.sold_micro += amount
                 self._updateStorage(-amount)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -179,6 +180,7 @@ class Player:
             if amount >= selling:
                 left = amount - selling
                 self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
+                self.sold_micro += selling
                 self._updateStorage(-selling)
                 self._updateCapForSale()
                 self._updateCapToBuy()
@@ -189,10 +191,10 @@ class Player:
             left = self.grid.buy(amount, self)  # buy from grid
             sold = amount - left
             self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
-            self.sold_micro = sold
+            self.sold_micro += sold
         # sell to grid the rest
         self.money += left * self.grid.AVG * self.grid.SELL_MAIN
-        self.sold_main = left
+        self.sold_main += left
         # THIS IS A BUG FIX FOR TOO MUCH BATTERY DISCHARGING WHEN THAT IT SHOULD BE
         if (
             self.selling == amount and self.selling > self.getAvailableStorage()
@@ -237,11 +239,11 @@ class Player:
             left = self.grid.sell(amount, self)  # buy from grid
             bought = amount - left
             self.money -= bought * self.grid.AVG * self.grid.BUY_MICRO
-            self.bought_micro = bought # Keep value for view
+            self.bought_micro += bought # Keep value for view
             self._updateStorage(bought)
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
-        self.bought_main = left # Keep valeu for view
+        self.bought_main += left # Keep valeu for view
         # might be needed here
         self.unused += self._updateStorage(amount)
         self._updateCapToBuy()

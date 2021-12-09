@@ -1,5 +1,6 @@
 import sys
 import os
+import copy
 
 from microgrid.strategy import Strategy
 
@@ -74,6 +75,30 @@ class TestPlayerClass(unittest.TestCase):
         p0 = m.players[0]
         p0.step()
 
+    def testBoughtSoldInsidemicro(self):
+        # Testing buying in micro scenario
+        self.p2 = Player(
+            None,
+            2,
+            Player.States.DO_NOTHING,
+            strategy=self.str,
+            p=60,
+            c=80,
+            b=20,
+            randomize=False,
+        )
+        m = Microgrid(n = 2, strategy = None, randomize = False)
+        m.players[0] = copy.deepcopy(self.p1)
+        m.players[0].strategy = Strategy(Strategy.Choice.ALWAYS_SELL)
+        m.players[0].grid = m
+        m.players[1] = copy.deepcopy(self.p2)
+        m.players[1].grid = m
+        m.players[1].step()
+
+        p2_bought_should = 80 - 60
+        p1_sold_should = p2_bought_should
+        self.assertTrue(m.players[1].bought_micro == p2_bought_should)
+        self.assertTrue(m.players[0].sold_micro == p1_sold_should)
 
 if __name__ == "__main__":
     unittest.main()

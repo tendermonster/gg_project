@@ -25,6 +25,8 @@ class Microgrid:
                 random.seed(i)
                 if randomize == False:
                     p, c, b = 100* random.random(), 100* random.random(), 100* random.random()
+                else:
+                    p, c, b = 100, 100, 100
                 
                 self.players.append(
                     Player(self, i, state=Player.States.STORING, strategy=strategy,
@@ -35,7 +37,9 @@ class Microgrid:
                 random.seed(i)
                 if randomize == False:
                     p, c, b = 100* random.random(), 100* random.random(), 100* random.random()
-                
+                else:
+                    p,c,b = 100, 100, 100
+
                 self.players.append(
                     Player(self, i, state=Player.States.STORING, strategy=strategy,
                     p=p,c=c, b=b, randomize=randomize)

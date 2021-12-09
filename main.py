@@ -10,7 +10,7 @@ def start():
     n_players = 5
     days = 10
     randomize = False  # p and c don't change each step
-    strategy = Strategy(2)
+    strategy = None
     # using random strategies for players
     m = Microgrid(n_players, strategy = strategy, randomize=randomize)
     total_series = views.initial_playermatrix(m)
@@ -22,7 +22,7 @@ def start():
     print("sold_micro: \n",total_series["sold_micro"])
     print("bought_micro_day:",np.sum(total_series["bought_micro"], axis = 1))
     print("sold_micro_day:",np.sum(total_series["sold_micro"], axis = 1))
-    assert((np.sum(total_series['bought_micro'], axis =1)
+    assert((np.sum(total_series['bought_micro'], axis = 1)
          == np.sum(total_series['sold_micro'], axis = 1)).all())
 
     print("Money for players")
