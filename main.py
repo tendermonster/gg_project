@@ -5,16 +5,18 @@ import numpy as np
 
 
 def start():
-    #this values show pretty much perfect normal distribution
-    #n_players = 500
-    #days = 100
+    # this values show pretty much perfect normal distribution
+    # n_players = 500
+    # days = 100
     n_players = 200
     days = 100
     randomize = True  # p and c don't change each step
-    strategy = {"random": None,
-                "gt": Strategy(choice=Strategy.Choice.GT),
-                "sell": Strategy(choice=Strategy.Choice.ALWAYS_SELL),
-                "buy": Strategy(choice=Strategy.Choice.ALWAYS_BUY)}
+    strategy = {
+        "random": None,
+        "gt": Strategy(choice=Strategy.Choice.GT),
+        "sell": Strategy(choice=Strategy.Choice.ALWAYS_SELL),
+        "buy": Strategy(choice=Strategy.Choice.ALWAYS_BUY),
+    }
     for k in strategy:
         # using random strategies for players
         m = Microgrid(n_players, strategy=strategy[k], randomize=randomize)
