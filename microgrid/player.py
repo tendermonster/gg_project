@@ -47,7 +47,7 @@ class Player:
         self.sold_main = 0
         self.battery_full = False
 
-        self._update_parameters()
+        self.update_parameters()
 
     # tested
     def __eq__(self, other):
@@ -173,25 +173,23 @@ class Player:
             if amount < selling:
                 # those ifs might be a little bit error prone
                 self.sold_micro += amount
+                self.selling -= amount
                 self.money += amount * self.grid.AVG * self.grid.SELL_MICRO
                 if self.battery_full:
                     pass  # selling from overflow of energy
                 else:
                     self._updateStorage(-amount)  # selling from battery
-                self._updateCapForSale()
-                self._updateCapToBuy()
                 return 0
             # sold partially
             if amount >= selling:
                 left = amount - selling
                 self.sold_micro += selling
+                self.selling -= selling
                 self.money += selling * self.grid.AVG * self.grid.SELL_MICRO
                 if self.battery_full:
                     pass  # selling from overflow of energy
                 else:
                     self._updateStorage(-selling)  # selling from battery
-                self._updateCapForSale()
-                self._updateCapToBuy()
                 return left
 
         left = amount
@@ -199,10 +197,12 @@ class Player:
             left = self.grid.buy(amount, self)  # buy from grid
             sold = amount - left
             self.sold_micro += sold
+            self.selling -= sold
             self.money += sold * self.grid.AVG * self.grid.SELL_MICRO
         # sell to grid the rest
         self.money += left * self.grid.AVG * self.grid.SELL_MAIN
         self.sold_main += left
+        self.selling -= left
         # THIS IS A BUG FIX FOR TOO MUCH BATTERY DISCHARGING WHEN THAT IT SHOULD BE
         if (
             self.selling == amount and self.selling > self.getAvailableStorage()
@@ -222,8 +222,6 @@ class Player:
                     self._updateStorage(-left)  # this should not happen
             else:
                 self._updateStorage(-amount)
-        self._updateCapForSale()
-        self._updateCapToBuy()
         return 0
 
     def buy(self, amount: float, micro: bool) -> float:
@@ -236,18 +234,16 @@ class Player:
             if amount > buying:
                 left = amount - buying
                 self.bought_micro += buying
+                self.buying -= buying
                 self.money -= buying * self.grid.AVG * self.grid.BUY_MICRO
                 self._updateStorage(buying)
-                self._updateCapForSale()
-                self._updateCapToBuy()
                 return left
             # buy all
             if amount <= buying:
                 self.bought_micro += amount
+                self.buying -= amount
                 self.money -= amount * self.grid.AVG * self.grid.BUY_MICRO
                 self._updateStorage(amount)
-                self._updateCapForSale()
-                self._updateCapToBuy()
                 return 0
             return left
 
@@ -255,15 +251,15 @@ class Player:
             left = self.grid.sell(amount, self)  # buy from grid
             bought = amount - left
             self.bought_micro += bought
+            self.buying -= bought
             self.money -= bought * self.grid.AVG * self.grid.BUY_MICRO
             self._updateStorage(bought)
         # buy from main grid
         self.money -= left * self.grid.AVG * self.grid.BUY_MAIN
         self.bought_main += left
+        self.buying -= left
         # might be needed here
         self.unused += self._updateStorage(left)
-        self._updateCapToBuy()
-        self._updateCapForSale()
 
     def _apply_strategy(self, s):
         buying = self.States.BUYING
@@ -302,7 +298,7 @@ class Player:
             if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
                 self.sell(amount=forSale, micro=True)
 
-    def _update_parameters(self):
+    def update_parameters(self):
         if self.randomize:
             # update buy sell parameters
             if self.p == 0 and self.c == 0:
@@ -335,7 +331,6 @@ class Player:
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
-        self._update_parameters()
 
     class States:
         SELLING = 0
