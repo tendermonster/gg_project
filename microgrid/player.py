@@ -47,7 +47,7 @@ class Player:
         self.sold_main = 0
         self.battery_full = False
 
-        self._update_parameters()
+        self.update_parameters()
 
     # tested
     def __eq__(self, other):
@@ -298,7 +298,7 @@ class Player:
             if self.strategy.choice == Strategy.Choice.ALWAYS_BUY:
                 self.sell(amount=forSale, micro=True)
 
-    def _update_parameters(self):
+    def update_parameters(self):
         if self.randomize:
             # update buy sell parameters
             if self.p == 0 and self.c == 0:

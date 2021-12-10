@@ -91,4 +91,4 @@ class Microgrid:
         for i in self.players:
             i.step()
         for i in self.players:
-            i._update_parameters()
+            i.update_parameters()
