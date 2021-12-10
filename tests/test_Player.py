@@ -124,7 +124,17 @@ class TestPlayerClass(unittest.TestCase):
         m.players[1].grid = m
 
         m.players[0].step()
+        m.players[1].step()
 
+        p1_sold_micro_should = 30
+        p1_sold_main_should = 0
+        p2_bought_micro_should = 30
+        p2_bought_main_should = 10
+
+        self.assertTrue(m.players[0].sold_micro == p1_sold_micro_should)
+        self.assertTrue(m.players[0].sold_main == p1_sold_main_should)
+        self.assertTrue(m.players[1].bought_micro == p2_bought_micro_should)
+        self.assertTrue(m.players[1].bought_main == p2_bought_main_should)
 
 if __name__ == "__main__":
     unittest.main()

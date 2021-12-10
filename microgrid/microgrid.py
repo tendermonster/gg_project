@@ -90,3 +90,5 @@ class Microgrid:
         self.day += 1
         for i in self.players:
             i.step()
+        for i in self.players:
+            i._update_parameters()

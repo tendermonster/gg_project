@@ -331,7 +331,6 @@ class Player:
             if len(s) != 0 and bestStrategy is not None:
                 # only do if some actions are needed
                 self._apply_strategy(bestStrategy)
-        self._update_parameters()
 
     class States:
         SELLING = 0
