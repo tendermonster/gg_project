@@ -76,7 +76,7 @@ class Microgrid:
         left = amount
         # if amount cannot be sold fully it not yet possible to sell
         trueSupply = self.getStorageForSale()
-        if trueSupply > amount:
+        if trueSupply >= amount:
             # can buy the amount
             p: Player
             for p in self.players:
