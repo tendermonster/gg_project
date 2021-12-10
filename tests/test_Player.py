@@ -96,28 +96,28 @@ class TestPlayerClass(unittest.TestCase):
     def testBoughtSold(self):
         # simple scenario
         p1 = Player(
-                None,
-                1,
-                Player.States.DO_NOTHING,
-                strategy=Strategy(Strategy.Choice.ALWAYS_SELL),
-                p=100,
-                c=70,
-                b=20,
-                randomize=False,
-            )
+            None,
+            1,
+            Player.States.DO_NOTHING,
+            strategy=Strategy(Strategy.Choice.ALWAYS_SELL),
+            p=100,
+            c=70,
+            b=20,
+            randomize=False,
+        )
 
         p2 = Player(
-                None,
-                2,
-                Player.States.DO_NOTHING,
-                strategy=Strategy(Strategy.Choice.GT),
-                p=60,
-                c=100,
-                b=20,
-                randomize=False,
-            )
+            None,
+            2,
+            Player.States.DO_NOTHING,
+            strategy=Strategy(Strategy.Choice.GT),
+            p=60,
+            c=100,
+            b=20,
+            randomize=False,
+        )
 
-        m = Microgrid(n = 2, strategy = None, randomize = False)
+        m = Microgrid(n=2, strategy=None, randomize=False)
         m.players[0] = p1
         m.players[0].grid = m
         m.players[1] = p2
@@ -135,6 +135,7 @@ class TestPlayerClass(unittest.TestCase):
         self.assertTrue(m.players[0].sold_main == p1_sold_main_should)
         self.assertTrue(m.players[1].bought_micro == p2_bought_micro_should)
         self.assertTrue(m.players[1].bought_main == p2_bought_main_should)
+
 
 if __name__ == "__main__":
     unittest.main()
