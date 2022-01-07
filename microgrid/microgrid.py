@@ -1,4 +1,6 @@
 from microgrid.player import Player
+from microgrid.strategy import Strategy
+import random
 import numpy as np
 
 
@@ -11,12 +13,35 @@ class Microgrid:
     STORE_BUY = 0
     STORE_SELL = 0
 
-    def __init__(self, n):
+    def __init__(self, n, strategy: Strategy, randomize=True):
         self.day = 0
         self.n = n
         self.players = []
-        for i in range(n):
-            self.players.append(Player(self, i, Player.States.STORING))
+        if strategy is None:
+            for i in range(n):
+                random_s = np.round(np.random.uniform(0, 2))
+                strategy = Strategy(choice=random_s)
+                random.seed(i)
+                self.players.append(
+                    Player(
+                        self,
+                        i,
+                        state=Player.States.STORING,
+                        strategy=strategy,
+                        randomize=randomize,
+                    )
+                )
+        else:
+            for i in range(n):
+                self.players.append(
+                    Player(
+                        self,
+                        i,
+                        state=Player.States.STORING,
+                        strategy=strategy,
+                        randomize=randomize,
+                    )
+                )
 
     # tested
     def getStorageForSale(self):
@@ -51,7 +76,7 @@ class Microgrid:
         left = amount
         # if amount cannot be sold fully it not yet possible to sell
         trueSupply = self.getStorageForSale()
-        if trueSupply > amount:
+        if trueSupply >= amount:
             # can buy the amount
             p: Player
             for p in self.players:
@@ -61,9 +86,9 @@ class Microgrid:
                         break
         return left
 
-    def step(self) -> None:
+    def step(self):
         self.day += 1
         for i in self.players:
-            i.update_parameters()
-        for i in self.players:
             i.step()
+        for i in self.players:
+            i.update_parameters()
