@@ -46,6 +46,7 @@ class Player:
         self.bought_main = 0
         self.sold_main = 0
         self.battery_full = False
+        self.battery_storage = []
 
         self.update_parameters()
 
@@ -326,6 +327,7 @@ class Player:
         # TODO production should change depending on a day
         # decide on the strategy
         if self.grid is not None:
+            self.battery_storage.append(self.b)
             s = self.possible_strategies()
             bestStrategy = self.strategy.utility(s, self.grid)
             if len(s) != 0 and bestStrategy is not None:
