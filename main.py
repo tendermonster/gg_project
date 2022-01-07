@@ -2,7 +2,8 @@ from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
 import matplotlib.pyplot as plt
 import numpy as np
-
+import seaborn as sns
+sns.set_theme()
 
 def start():
     # this values show pretty much perfect normal distribution
@@ -18,26 +19,20 @@ def start():
         "buy": Strategy(choice=Strategy.Choice.ALWAYS_BUY),
     }
     counter = 0
+    avg_battery_levels = []
     for k in strategy:
         # using random strategies for players
         m = Microgrid(n_players, strategy=strategy[k], randomize=randomize)
         for i in range(days):
             m.step()
 
-        plt.figure()
-        plt.title("avg battery levels of the players with strategy {s}".format(s=k))
-        plt.xlabel("days of simulation")
-        plt.ylabel("battery level")
         avg_batt_storage = None
         for i in m.players:
             if avg_batt_storage is None:
                 avg_batt_storage = i.battery_storage
             avg_batt_storage = np.add(avg_batt_storage,i.battery_storage)
         avg_batt_storage = avg_batt_storage/len(m.players)
-        plt.plot(avg_batt_storage)
-        mode = "battery_level"
-        plt.savefig("figures/{m}_{s}_{c}.png".format(s=k,c=counter,m=mode))
-        plt.close()
+        avg_battery_levels.append(avg_batt_storage)
 
         type_where="main"
         mode = "sold"
@@ -102,12 +97,23 @@ def start():
         plt.ylabel("Occurrence")
         avg_cash = np.sum(cash)/len(cash)
         plt.axvline(avg_cash,c='r',linewidth=5.0,label="average")
-        plt.hist(cash, bins=len(cash))
+        plt.hist(cash, bins=len(cash),color = "skyblue", ec="skyblue")
         plt.legend()
         plt.savefig("figures/{m}_{s}_{c}.png".format(s=k,c=counter,m=mode))
         plt.close()
         counter +=1
     #plt.show()
+    plt.figure()
+    plt.title("avg battery levels of the players")
+    plt.xlabel("days of simulation")
+    plt.ylabel("battery level")
+    s = ["random","gt","sell(same as gt)","buy"]
+    for i in range(len(avg_battery_levels)):
+        plt.plot(avg_battery_levels[i],label=s[i])
+    mode = "battery_level"
+    plt.legend()
+    plt.savefig("figures/{m}_{c}.png".format(c=counter,m=mode))
+    plt.close()
 
 
 if __name__ == "__main__":
