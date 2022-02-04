@@ -1,9 +1,26 @@
+from stringprep import c22_specials
 from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 import seaborn as sns
+
 sns.set_theme()
+
+def parameters():
+    shift_b = 0
+    params = set()
+    for i in range(0,11):    
+        a = list(np.around(np.abs(np.arange(1,-0.1,-0.1)),decimals=2))
+        b = list(np.around(np.abs(np.arange(0,1.1,0.1)),decimals=2))
+        for j in range(0,i):
+            a = a[-1:]+a[:-1]
+        for j in range(0,shift_b):
+            b = b[-1:]+b[:-1]
+        params.update(tuple(zip(a,b)))
+    params = sorted(list(params))
+    return params
 
 def start():
     # this values show pretty much perfect normal distribution
@@ -117,4 +134,113 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    #start()
+    #parameter_search()
+    n_players = 5
+    days = 5
+    randomize = True
+    strategy = {
+        "random": None,
+        "gt": Strategy(choice=Strategy.Choice.GT),
+        "sell": Strategy(choice=Strategy.Choice.ALWAYS_SELL),
+        "buy": Strategy(choice=Strategy.Choice.ALWAYS_BUY),
+    }
+    m = Microgrid(n_players, strategy=strategy["gt"], randomize=randomize)
+    params = parameters()
+
+    start = time.time()
+    cs = []
+    cashs_gt = []
+    cashs_sell = []
+    cashs_buy = []
+    count = 0
+    for i in range(0,len(params)):
+        if count == 20:
+            break
+        for j in params:
+            BUY_MAIN = params[i][0]
+            BUY_MICRO = params[i][1]
+            SELL_MAIN = j[0]
+            SELL_MICRO = j[1]
+            c = [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]
+            cs.append(c)
+            m = Microgrid(n_players, strategy=strategy["gt"], c = c, randomize=randomize)
+            for g in range(days):
+                m.step()
+            cash = np.mean([i.money for i in m.players])
+            cashs_gt.append(cash)
+            m = Microgrid(n_players, strategy=strategy["sell"], c = c, randomize=randomize)
+            for g in range(days):
+                m.step()
+            cash = np.mean([i.money for i in m.players])
+            cashs_sell.append(cash)
+
+            m = Microgrid(n_players, strategy=strategy["buy"], c = c, randomize=randomize)
+            for g in range(days):
+                m.step()
+            cash = np.mean([i.money for i in m.players])
+            cashs_buy.append(cash)
+        count += 1
+    end = time.time()
+    #print(cashs)
+    #print(cs)
+    #cashs_gt = sorted(cashs_gt)
+    #cashs_sell = sorted(cashs_sell)
+    print("mean money GT",np.mean(cashs_gt))
+    print("mean money SELL",np.mean(cashs_sell))
+    print("mean money BUY",np.mean(cashs_buy))
+    plt.figure()
+    plt.title("diff params with GT")
+    plt.plot(cashs_gt)
+    plt.figure()
+    plt.title("diff params with SELL")
+    plt.plot(cashs_sell)
+    plt.figure()
+    plt.title("diff params with BUY")
+    plt.plot(cashs_buy)
+
+    plt.figure()
+    plt.title("difference/intersection GT and SELL")
+    diff = set(cashs_gt)
+    diff = diff.difference(set(cashs_sell))
+    plt.plot(sorted(list(diff)),label="diff GT and SELL")
+    intersection = set(cashs_gt)
+    intersection = intersection.intersection(set(cashs_sell))
+    plt.plot(sorted(list(intersection)),label="intersection GT and SELL")
+    plt.legend()
+
+    plt.figure()
+    plt.title("difference/intersection GT and BUY")
+    diff = set(cashs_gt)
+    diff = diff.difference(set(cashs_buy))
+    plt.plot(sorted(list(diff)),label="diff GT and BUY")
+    intersection = set(cashs_gt)
+    intersection = intersection.intersection(set(cashs_buy))
+    plt.plot(sorted(list(intersection)),label="intersection GT and BUY")
+    plt.legend()
+
+    plt.figure()
+    plt.title("difference/intersection SELL and BUY")
+    diff = set(cashs_sell)
+    diff = diff.difference(set(cashs_buy))
+    plt.plot(sorted(list(diff)),label="diff SELL and BUY")
+    intersection = set(cashs_sell)
+    intersection = intersection.intersection(set(cashs_buy))
+    plt.plot(sorted(list(intersection)),label="intersection SELL and BUY")
+    plt.legend()
+
+    # plot params
+    c1 = []
+    c2 = []
+    for i in params:
+        c1.append(i[0])
+        c2.append(i[1])
+    
+    plt.figure()
+    plt.title("tuple constant arrangement")
+    plt.plot(c1,label="c1 fixed buy/sell")
+    plt.plot(c2,label="c2 not fixed buy/sell")
+    plt.legend()
+    
+    print(end - start)
+    plt.show()

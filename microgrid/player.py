@@ -16,7 +16,7 @@ class Player:
     def __init__(
         self, grid, id, state, strategy: Strategy, p=100, c=100, b=100, randomize=True
     ):
-        random.seed(id)
+        random.seed(123)
         self.money = 1000
         self.grid = grid  # Microgrid object
         self.id = id

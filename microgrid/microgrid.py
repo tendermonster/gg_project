@@ -7,13 +7,22 @@ import numpy as np
 class Microgrid:
     AVG = 0.15
     BUY_MAIN = 1
+    BUY_MICRO = 0.8
     SELL_MAIN = 0.5
     SELL_MICRO = 0.8
-    BUY_MICRO = 0.8
     STORE_BUY = 0
-    STORE_SELL = 0
+    STORE_SELL = (SELL_MAIN+SELL_MICRO)/2
 
-    def __init__(self, n, strategy: Strategy, randomize=True):
+    def __init__(self, n, strategy: Strategy, c=None,randomize=True):
+        random.seed(123)
+        """
+        c layout [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]
+        """
+        if c is not None:
+            self.BUY_MAIN = c[0]
+            self.BUY_MICRO = c[1]
+            self.SELL_MAIN = c[2]
+            self.SELL_MICRO = c[3]
         self.day = 0
         self.n = n
         self.players = []

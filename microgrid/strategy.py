@@ -51,9 +51,9 @@ class Strategy:
         table = np.array(
             [
                 # buy #sell
-                [1, 0.5],  # Main
-                [0.8, 0.8],  # Micro
-                [0, 0.65],  # Storage
+                [grid.BUY_MAIN, grid.SELL_MAIN],  # Main
+                [grid.BUY_MICRO, grid.SELL_MICRO],  # Micro
+                [grid.STORE_BUY, grid.STORE_SELL],  # Storage
             ]
         )
         return self._chooseoptimum(s, table)
