@@ -3,6 +3,7 @@ from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import time
 import seaborn as sns
 
@@ -12,8 +13,8 @@ def parameters():
     shift_b = 0
     params = set()
     for i in range(0,11):    
-        a = list(np.around(np.abs(np.arange(1,-0.1,-0.1)),decimals=2))
-        b = list(np.around(np.abs(np.arange(0,1.1,0.1)),decimals=2))
+        a = list(np.around(np.abs(np.arange(1,0,-0.1)),decimals=2))
+        b = list(np.around(np.abs(np.arange(0.1,1.1,0.1)),decimals=2))
         for j in range(0,i):
             a = a[-1:]+a[:-1]
         for j in range(0,shift_b):
@@ -158,28 +159,30 @@ if __name__ == "__main__":
         if count == 20:
             break
         for j in params:
-            BUY_MAIN = params[i][0]
+            BUY_MAIN = 1
             BUY_MICRO = params[i][1]
             SELL_MAIN = j[0]
             SELL_MICRO = j[1]
-            c = [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]
-            cs.append(c)
-            m = Microgrid(n_players, strategy=strategy["gt"], c = c, randomize=randomize)
-            for g in range(days):
-                m.step()
-            cash = np.mean([i.money for i in m.players])
-            cashs_gt.append(cash)
-            m = Microgrid(n_players, strategy=strategy["sell"], c = c, randomize=randomize)
-            for g in range(days):
-                m.step()
-            cash = np.mean([i.money for i in m.players])
-            cashs_sell.append(cash)
 
-            m = Microgrid(n_players, strategy=strategy["buy"], c = c, randomize=randomize)
-            for g in range(days):
-                m.step()
-            cash = np.mean([i.money for i in m.players])
-            cashs_buy.append(cash)
+            if SELL_MICRO <= BUY_MICRO and SELL_MAIN <= BUY_MICRO:
+                c = [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]
+                cs.append(c)
+                m = Microgrid(n_players, strategy=strategy["gt"], c = c, randomize=randomize)
+                for g in range(days):
+                    m.step()
+                cash = np.mean([i.money for i in m.players])
+                cashs_gt.append(cash)
+                m = Microgrid(n_players, strategy=strategy["sell"], c = c, randomize=randomize)
+                for g in range(days):
+                    m.step()
+                cash = np.mean([i.money for i in m.players])
+                cashs_sell.append(cash)
+
+                m = Microgrid(n_players, strategy=strategy["buy"], c = c, randomize=randomize)
+                for g in range(days):
+                    m.step()
+                cash = np.mean([i.money for i in m.players])
+                cashs_buy.append(cash)
         count += 1
     end = time.time()
     #print(cashs)
@@ -190,14 +193,105 @@ if __name__ == "__main__":
     print("mean money SELL",np.mean(cashs_sell))
     print("mean money BUY",np.mean(cashs_buy))
     plt.figure()
-    plt.title("diff params with GT")
-    plt.plot(cashs_gt)
+    #plt.title("diff params with GT")
+    plt.plot(cashs_gt, label = "gt")
+    #plt.title("diff params with SELL")
+    plt.plot(cashs_sell, label = "sell")
+    #plt.title("diff params with BUY")
+    plt.plot(cashs_buy, label = "buy")
+    plt.legend()
+
+    df_cashs = pd.DataFrame(np.array([cashs_sell, cashs_gt, cashs_buy, cs]).T).sort_values(0).reset_index(drop = True)
+    print(df_cashs.head())
+    print(df_cashs.iloc[:,0:3])
+    plt.title("ordered by selling for each simulation with different parameters")
     plt.figure()
-    plt.title("diff params with SELL")
-    plt.plot(cashs_sell)
+    plt.plot(df_cashs.iloc[:,0:3], label=('sell','gt', 'buy'))
+    plt.xlabel("Simulation")
+    plt.ylabel("Money left")
+    plt.legend()
+
     plt.figure()
-    plt.title("diff params with BUY")
-    plt.plot(cashs_buy)
+    plt.title("parameters sets and values - offset by 1 (true range 0-1)")
+    df_params = pd.DataFrame(df_cashs.iloc[:,3].tolist())
+    df_params.iloc[:,1] = df_params.iloc[:,1] + 1
+    df_params.iloc[:,2] = df_params.iloc[:,2] + 2
+    df_params.iloc[:,3] = df_params.iloc[:,3] + 3
+    plt.plot(df_params.iloc[:,1:4], 'o:', label=('BUY_MICRO','SELL_MAIN','SELL_MICRO'))
+    plt.legend()
+    plt.xlabel("Parameter set")
+    plt.ylabel("Value - offset 1 for each")
+
+    plt.figure()
+    plt.title("parameters sets gt is better than sell")
+    df_gt_sell = df_cashs[df_cashs.iloc[:,0] < df_cashs.iloc[:,1]]
+    df_params_gt_sell = pd.DataFrame(df_gt_sell.iloc[:,3].tolist())
+    df_params_gt_sell.iloc[:,1] = df_params_gt_sell.iloc[:,1] + 1
+    df_params_gt_sell.iloc[:,2] = df_params_gt_sell.iloc[:,2] + 2
+    df_params_gt_sell.iloc[:,3] = df_params_gt_sell.iloc[:,3] + 3
+    plt.plot(df_params_gt_sell.iloc[:,1:4], 'o:', label=('BUY_MICRO','SELL_MAIN','SELL_MICRO'))
+    plt.legend()
+    plt.xlabel("Parameter set")
+    plt.ylabel("Value - offset 1 for each")
+
+    plt.figure()
+    plt.title("selling main/micro price relation gt > sell")
+    df_params_gt_sell.iloc[:,1] = df_params_gt_sell.iloc[:,1] - 1
+    df_params_gt_sell.iloc[:,2] = df_params_gt_sell.iloc[:,2] - 2
+    df_params_gt_sell.iloc[:,3] = df_params_gt_sell.iloc[:,3] - 3
+    df_params_gt_sell['sell_main_micro_rel'] = df_params_gt_sell.iloc[:,2]/df_params_gt_sell.iloc[:,3]
+    plt.plot(df_params_gt_sell['sell_main_micro_rel'])
+
+    plt.figure()
+    plt.title("parameters sets sell is better than gt")
+    df_sell_gt = df_cashs[df_cashs.iloc[:,0] > df_cashs.iloc[:,1]]
+    df_params_sell_gt = pd.DataFrame(df_sell_gt.iloc[:,3].tolist())
+    df_params_sell_gt.iloc[:,1] = df_params_sell_gt.iloc[:,1] + 1
+    df_params_sell_gt.iloc[:,2] = df_params_sell_gt.iloc[:,2] + 2
+    df_params_sell_gt.iloc[:,3] = df_params_sell_gt.iloc[:,3] + 3
+    plt.plot(df_params_sell_gt.iloc[:,1:4], 'o:', label=('BUY_MICRO','SELL_MAIN','SELL_MICRO'))
+    plt.legend()
+    plt.xlabel("Parameter set")
+    plt.ylabel("Value - offset 1 for each")
+
+    plt.figure()
+    plt.title("selling main/micro price relation sell > gt")
+    df_params_sell_gt.iloc[:,1] = df_params_sell_gt.iloc[:,1] - 1
+    df_params_sell_gt.iloc[:,2] = df_params_sell_gt.iloc[:,2] - 2
+    df_params_sell_gt.iloc[:,3] = df_params_sell_gt.iloc[:,3] - 3
+    df_params_sell_gt['sell_main_micro_rel'] = df_params_sell_gt.iloc[:,2]/df_params_sell_gt.iloc[:,3]
+    plt.plot(df_params_sell_gt['sell_main_micro_rel'])
+
+    plt.figure()
+    plt.title("parameters sets gt is better than sell")
+    df_gt_sell = df_cashs[df_cashs.iloc[:,0] == df_cashs.iloc[:,1]]
+    df_params_gt_sell = pd.DataFrame(df_gt_sell.iloc[:,3].tolist())
+    df_params_gt_sell.iloc[:,1] = df_params_gt_sell.iloc[:,1] + 1
+    df_params_gt_sell.iloc[:,2] = df_params_gt_sell.iloc[:,2] + 2
+    df_params_gt_sell.iloc[:,3] = df_params_gt_sell.iloc[:,3] + 3
+    plt.plot(df_params_gt_sell.iloc[:,1:4], 'o:', label=('BUY_MICRO','SELL_MAIN','SELL_MICRO'))
+    plt.legend()
+    plt.xlabel("Parameter set")
+    plt.ylabel("Value - offset 1 for each")
+
+    plt.figure()
+    plt.title("selling main/micro price relation gt == sell")
+    df_params_gt_sell.iloc[:,1] = df_params_gt_sell.iloc[:,1] - 1
+    df_params_gt_sell.iloc[:,2] = df_params_gt_sell.iloc[:,2] - 2
+    df_params_gt_sell.iloc[:,3] = df_params_gt_sell.iloc[:,3] - 3
+    df_params_gt_sell['sell_main_micro_rel'] = df_params_gt_sell.iloc[:,2]/df_params_gt_sell.iloc[:,3]
+    plt.plot(df_params_gt_sell['sell_main_micro_rel'])
+
+    plt.figure()
+    plt.title("difference of gt and sell and selling main/selling micro relation")
+    df_diff_gt_sell = df_cashs.copy()
+    df_diff_gt_sell= pd.concat([df_diff_gt_sell.iloc[:,0:3], pd.DataFrame(df_diff_gt_sell.iloc[:,3].tolist())], axis = 1).reset_index(drop = True)
+    print(df_diff_gt_sell)
+    df_diff_gt_sell['difference'] = df_diff_gt_sell.iloc[:,0] - df_diff_gt_sell.iloc[:,1]
+    df_diff_gt_sell['sell_main_micro_rel'] = df_diff_gt_sell.iloc[:,5]/df_diff_gt_sell.iloc[:,6]
+    plt.scatter(df_diff_gt_sell['difference'], df_diff_gt_sell['sell_main_micro_rel'])
+    plt.xlabel("Difference of sell and gt")
+    plt.ylabel("relation selling main/micro price")
 
     plt.figure()
     plt.title("difference/intersection GT and SELL")
