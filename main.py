@@ -136,7 +136,6 @@ def start():
 
 if __name__ == "__main__":
     #start()
-    #parameter_search()
     n_players = 5
     days = 12
     randomize = True
@@ -146,7 +145,6 @@ if __name__ == "__main__":
         "sell": Strategy(choice=Strategy.Choice.ALWAYS_SELL),
         "buy": Strategy(choice=Strategy.Choice.ALWAYS_BUY),
     }
-    m = Microgrid(n_players, strategy=strategy["gt"], randomize=randomize)
     params = parameters()
     unconstrained = 0
     start = time.time()
@@ -196,16 +194,17 @@ if __name__ == "__main__":
     print("mean money SELL",np.mean(cashs_sell))
     print("mean money BUY",np.mean(cashs_buy))
     plt.figure()
-    #plt.title("diff params with GT")
+    plt.title("Money left after simulation for each parameter")
+    plt.ylabel("Money left")
+    plt.xlabel("Parameter with ID")
     plt.plot(cashs_gt, label = "gt")
-    #plt.title("diff params with SELL")
     plt.plot(cashs_sell, label = "sell")
-    #plt.title("diff params with BUY")
     plt.plot(cashs_buy, label = "buy")
-    plt.legend(loc = 'lower center')
+    plt.legend(loc = 'best')
 
     df_cashs = pd.DataFrame(np.array([cashs_sell, cashs_gt, cashs_buy, cs]).T, columns=['sell','gt','buy','params']).sort_values('sell').reset_index(drop=True)
     df_cashs_unique = df_cashs.drop_duplicates(subset = ['sell','gt','buy'])
+    """
     plt.figure()
     plt.title("constrained search space final money left")
     plt.plot(df_cashs_unique.iloc[:,2], label='buy')
@@ -217,15 +216,25 @@ if __name__ == "__main__":
     plt.savefig("figures/constrained_money_left.png", bbox_inches = "tight")
 
     plt.figure()
+
     plt.title("constrained parameters values")
     df_params = pd.DataFrame(df_cashs.iloc[:,3].tolist()).reset_index(drop=True).reset_index()
     df_params.iloc[:,2] = df_params.iloc[:,2] + 1
     df_params.iloc[:,3] = df_params.iloc[:,3] + 2
     df_params.iloc[:,4] = df_params.iloc[:,4] + 3
-    plt.scatter(df_params['index'], df_params.iloc[:,1], label='% Buy from main', marker = '.')
-    plt.scatter(df_params['index'], df_params.iloc[:,2], label='% Buy from micro', marker = '.')
-    plt.scatter(df_params['index'], df_params.iloc[:,3], label='% Sell to main', marker = '.')
-    plt.scatter(df_params['index'], df_params.iloc[:,4], label='% Sell to micro', marker = '.')
+
+    #colors 
+    labels = ['% Buy from main','% Buy from micro','% Sell to main','% Sell to micro']
+    x = df_params['index']
+    ys1 = df_params.iloc[:,1]
+    ys2 = df_params.iloc[:,2]
+    ys3 = df_params.iloc[:,3]
+    ys4 = df_params.iloc[:,4]
+
+    plt.scatter(x, ys1, label=labels[0], marker = '.')
+    plt.scatter(x, ys2, label=labels[1], marker = '.')
+    plt.scatter(x, ys3, label=labels[2], marker = '.')
+    plt.scatter(x, ys4, label=labels[3], marker = '.')
     #plt.plot(df_params.iloc[:,0:4], 'o:', label=('BUY_MAIN','BUY_MICRO','SELL_MAIN','SELL_MICRO'))
     plt.legend(bbox_to_anchor=(1.04,0))
     plt.xlabel("Simulation ID")
@@ -314,17 +323,45 @@ if __name__ == "__main__":
     # df_params_gt_sell.iloc[:,3] = df_params_gt_sell.iloc[:,3] - 3
     # df_params_gt_sell['sell_main_micro_rel'] = df_params_gt_sell.iloc[:,2]/df_params_gt_sell.iloc[:,3]
     # plt.plot(df_params_gt_sell['sell_main_micro_rel'])
+    """
 
     plt.figure()
     plt.title("difference of gt and sell and selling main/selling micro relation")
     df_diff_gt_sell = df_cashs.copy()
     df_diff_gt_sell= pd.concat([df_diff_gt_sell.iloc[:,0:3], pd.DataFrame(df_diff_gt_sell.iloc[:,3].tolist())], axis = 1).reset_index(drop = True)
     df_diff_gt_sell['difference'] = df_diff_gt_sell.iloc[:,0] - df_diff_gt_sell.iloc[:,1]
+    df_diff_gt_sell['difference'].replace([np.inf, -np.inf], np.nan, inplace=True)
+    x_diff = df_diff_gt_sell['difference'].to_numpy()
+    x_diff[x_diff == 0] = np.nan
     df_diff_gt_sell['sell_main_micro_rel'] = df_diff_gt_sell.iloc[:,5]/df_diff_gt_sell.iloc[:,6]
-    plt.scatter(df_diff_gt_sell['difference'], df_diff_gt_sell['sell_main_micro_rel'], marker = '.')
+    df_diff_gt_sell['sell_main_micro_rel'].replace([np.inf, -np.inf], np.nan, inplace=True)
+    y_ratio = df_diff_gt_sell['sell_main_micro_rel'].to_numpy()
+    plt.axvspan(min(x_diff), 0, facecolor='b', alpha=0.5,label = "more profitable for gt strategy")
+    plt.axvspan(0,max(x_diff)*1.1, facecolor='g', alpha=0.5,label = "more profitable for sell strategy")
+    plt.scatter(x_diff, y_ratio, marker = '.',color = "black")
+    plt.xlabel("Difference of money left for always sell and gt")
+    plt.ylabel("Ratio between selling main/selling micro prices")
+    plt.legend()
+    plt.savefig("figures/constrained_ratio_diff.png")
+    plt.show()
+
+    """
+    plt.figure()
+    plt.title("difference of gt and sell and selling main/selling micro relation")
+    df_diff_gt_sell = df_cashs.copy()
+    df_diff_gt_sell= pd.concat([df_diff_gt_sell.iloc[:,0:3], pd.DataFrame(df_diff_gt_sell.iloc[:,3].tolist())], axis = 1).reset_index(drop = True)
+    df_diff_gt_sell['difference'] = df_diff_gt_sell.iloc[:,0] - df_diff_gt_sell.iloc[:,1]
+    x_diff = np.nan_to_num(df_diff_gt_sell['difference'].to_numpy())
+    df_diff_gt_sell['sell_main_micro_rel'] = df_diff_gt_sell.iloc[:,5]/df_diff_gt_sell.iloc[:,6]
+    y_ratio = np.nan_to_num(df_diff_gt_sell['sell_main_micro_rel'].to_numpy())
+    plt.scatter(x_diff, y_ratio, marker = '.')
     plt.xlabel("Difference of money left for always sell and gt")
     plt.ylabel("Ratio between selling main/selling micro prices")
     plt.savefig("figures/constrained_ratio_diff.png")
+    plt.show()
+    """
+
+    """
 
     plt.figure()
     plt.title("difference/intersection GT and SELL")
@@ -371,3 +408,4 @@ if __name__ == "__main__":
     
     print(end - start)
     plt.show()
+    """
