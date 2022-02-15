@@ -11,9 +11,9 @@ class Microgrid:
     SELL_MAIN = 0.5
     SELL_MICRO = 0.8
     STORE_BUY = 0
-    STORE_SELL = (SELL_MAIN+SELL_MICRO)/2
+    STORE_SELL = (SELL_MAIN + SELL_MICRO) / 2
 
-    def __init__(self, n, strategy: Strategy, c=None,randomize=True):
+    def __init__(self, n, strategy: Strategy, c=None, randomize=True):
         random.seed(123)
         """
         c layout [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]

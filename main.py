@@ -1,4 +1,3 @@
-from stringprep import c22_specials
 from microgrid.microgrid import Microgrid
 from microgrid.strategy import Strategy
 import matplotlib.pyplot as plt
@@ -9,19 +8,21 @@ import seaborn as sns
 
 sns.set_theme()
 
+
 def parameters():
     shift_b = 0
     params = set()
-    for i in range(0,11):    
-        a = list(np.around(np.abs(np.arange(1,-0.1,-0.1)),decimals=2))
-        b = list(np.around(np.abs(np.arange(0,1.1,0.1)),decimals=2))
-        for j in range(0,i):
-            a = a[-1:]+a[:-1]
-        for j in range(0,shift_b):
-            b = b[-1:]+b[:-1]
-        params.update(tuple(zip(a,b)))
+    for i in range(0, 11):
+        a = list(np.around(np.abs(np.arange(1, -0.1, -0.1)), decimals=2))
+        b = list(np.around(np.abs(np.arange(0, 1.1, 0.1)), decimals=2))
+        for j in range(0, i):
+            a = a[-1:] + a[:-1]
+        for j in range(0, shift_b):
+            b = b[-1:] + b[:-1]
+        params.update(tuple(zip(a, b)))
     params = sorted(list(params))
     return params
+
 
 def start():
     # this values show pretty much perfect normal distribution
@@ -48,11 +49,11 @@ def start():
         for i in m.players:
             if avg_batt_storage is None:
                 avg_batt_storage = i.battery_storage
-            avg_batt_storage = np.add(avg_batt_storage,i.battery_storage)
-        avg_batt_storage = avg_batt_storage/len(m.players)
+            avg_batt_storage = np.add(avg_batt_storage, i.battery_storage)
+        avg_batt_storage = avg_batt_storage / len(m.players)
         avg_battery_levels.append(avg_batt_storage)
 
-        type_where="main"
+        type_where = "main"
         mode = "sold"
         sold_main = [i.sold_main for i in m.players]
         main_sold = np.sum(sold_main)
@@ -61,9 +62,11 @@ def start():
         plt.xlabel("Player")
         plt.ylabel("Energy units sold")
         plt.plot(sold_main)
-        plt.savefig("figures/{m}_{w}_{s}_{c}.png".format(s=k,c=counter,w=type_where,m=mode))
+        plt.savefig(
+            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode)
+        )
         plt.close()
-        
+
         mode = "bought"
         bought_main = [i.bought_main for i in m.players]
         main_bought = np.sum(bought_main)
@@ -72,11 +75,12 @@ def start():
         plt.xlabel("Player")
         plt.ylabel("Energy units bought")
         plt.plot(bought_main)
-        plt.savefig("figures/{m}_{w}_{s}_{c}.png".format(s=k,c=counter,w=type_where,m=mode))
+        plt.savefig(
+            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode)
+        )
         plt.close()
 
-
-        type_where="micro"
+        type_where = "micro"
         mode = "sold"
         sold_micro = [i.sold_micro for i in m.players]
         micro_sold = np.sum(sold_micro)
@@ -85,7 +89,9 @@ def start():
         plt.xlabel("Player")
         plt.ylabel("Energy units sold")
         plt.plot(sold_micro)
-        plt.savefig("figures/{m}_{w}_{s}_{c}.png".format(s=k,c=counter,w=type_where,m=mode))
+        plt.savefig(
+            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode)
+        )
         plt.close()
 
         mode = "bought"
@@ -96,7 +102,9 @@ def start():
         plt.xlabel("Player")
         plt.ylabel("Energy units bought")
         plt.plot(bought_micro)
-        plt.savefig("figures/{m}_{w}_{s}_{c}.png".format(s=k,c=counter,w=type_where,m=mode))
+        plt.savefig(
+            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode)
+        )
         plt.close()
 
         mode = "money"
@@ -113,29 +121,29 @@ def start():
         plt.title("{s} strategy for players".format(s=k))
         plt.xlabel("Money left")
         plt.ylabel("Occurrence")
-        avg_cash = np.sum(cash)/len(cash)
-        plt.axvline(avg_cash,c='r',linewidth=5.0,label="average")
-        plt.hist(cash, bins=len(cash),color = "skyblue", ec="skyblue")
+        avg_cash = np.sum(cash) / len(cash)
+        plt.axvline(avg_cash, c="r", linewidth=5.0, label="average")
+        plt.hist(cash, bins=len(cash), color="skyblue", ec="skyblue")
         plt.legend()
-        plt.savefig("figures/{m}_{s}_{c}.png".format(s=k,c=counter,m=mode))
+        plt.savefig("figures/{m}_{s}_{c}.png".format(s=k, c=counter, m=mode))
         plt.close()
-        counter +=1
-    #plt.show()
+        counter += 1
+    # plt.show()
     plt.figure()
     plt.title("avg battery levels of the players")
     plt.xlabel("days of simulation")
     plt.ylabel("battery level")
-    s = ["random","gt","sell(same as gt)","buy"]
+    s = ["random", "gt", "sell(same as gt)", "buy"]
     for i in range(len(avg_battery_levels)):
-        plt.plot(avg_battery_levels[i],label=s[i])
+        plt.plot(avg_battery_levels[i], label=s[i])
     mode = "battery_level"
     plt.legend()
-    plt.savefig("figures/{m}_{c}.png".format(c=counter,m=mode))
+    plt.savefig("figures/{m}_{c}.png".format(c=counter, m=mode))
     plt.close()
 
 
 if __name__ == "__main__":
-    #start()
+    # start()
     n_players = 5
     days = 12
     randomize = True
@@ -147,13 +155,13 @@ if __name__ == "__main__":
     }
     params = parameters()
     unconstrained = 0
-    start = time.time()
+    start_now = time.time()
     cs = []
     cashs_gt = []
     cashs_sell = []
     cashs_buy = []
     count = 0
-    for i in range(0,len(params)):
+    for i in range(0, len(params)):
         # if count == 20:
         #      break
         for j in params:
@@ -165,45 +173,60 @@ if __name__ == "__main__":
             SELL_MAIN = j[0]
             SELL_MICRO = j[1]
 
-            if (SELL_MICRO <= BUY_MICRO and SELL_MAIN <= BUY_MICRO) or unconstrained == 1:
-                c = [BUY_MAIN,BUY_MICRO,SELL_MAIN,SELL_MICRO]
+            if (
+                SELL_MICRO <= BUY_MICRO and SELL_MAIN <= BUY_MICRO
+            ) or unconstrained == 1:
+                c = [BUY_MAIN, BUY_MICRO, SELL_MAIN, SELL_MICRO]
                 cs.append(c)
-                m = Microgrid(n_players, strategy=strategy["gt"], c = c, randomize=randomize)
+                m = Microgrid(
+                    n_players, strategy=strategy["gt"], c=c, randomize=randomize
+                )
                 for g in range(days):
                     m.step()
                 cash = np.mean([i.money for i in m.players])
                 cashs_gt.append(cash)
-                m = Microgrid(n_players, strategy=strategy["sell"], c = c, randomize=randomize)
+                m = Microgrid(
+                    n_players, strategy=strategy["sell"], c=c, randomize=randomize
+                )
                 for g in range(days):
                     m.step()
                 cash = np.mean([i.money for i in m.players])
                 cashs_sell.append(cash)
 
-                m = Microgrid(n_players, strategy=strategy["buy"], c = c, randomize=randomize)
+                m = Microgrid(
+                    n_players, strategy=strategy["buy"], c=c, randomize=randomize
+                )
                 for g in range(days):
                     m.step()
                 cash = np.mean([i.money for i in m.players])
                 cashs_buy.append(cash)
         count += 1
     end = time.time()
-    #print(cashs)
-    #print(cs)
-    #cashs_gt = sorted(cashs_gt)
-    #cashs_sell = sorted(cashs_sell)
-    print("mean money GT",np.mean(cashs_gt))
-    print("mean money SELL",np.mean(cashs_sell))
-    print("mean money BUY",np.mean(cashs_buy))
+    # print(cashs)
+    # print(cs)
+    # cashs_gt = sorted(cashs_gt)
+    # cashs_sell = sorted(cashs_sell)
+    print("mean money GT", np.mean(cashs_gt))
+    print("mean money SELL", np.mean(cashs_sell))
+    print("mean money BUY", np.mean(cashs_buy))
     plt.figure()
     plt.title("Money left after simulation for each parameter")
     plt.ylabel("Money left")
     plt.xlabel("Parameter with ID")
-    plt.plot(cashs_gt, label = "gt")
-    plt.plot(cashs_sell, label = "sell")
-    plt.plot(cashs_buy, label = "buy")
-    plt.legend(loc = 'best')
+    plt.plot(cashs_gt, label="gt")
+    plt.plot(cashs_sell, label="sell")
+    plt.plot(cashs_buy, label="buy")
+    plt.legend(loc="best")
 
-    df_cashs = pd.DataFrame(np.array([cashs_sell, cashs_gt, cashs_buy, cs]).T, columns=['sell','gt','buy','params']).sort_values('sell').reset_index(drop=True)
-    df_cashs_unique = df_cashs.drop_duplicates(subset = ['sell','gt','buy'])
+    df_cashs = (
+        pd.DataFrame(
+            np.array([cashs_sell, cashs_gt, cashs_buy, cs]).T,
+            columns=["sell", "gt", "buy", "params"],
+        )
+        .sort_values("sell")
+        .reset_index(drop=True)
+    )
+    df_cashs_unique = df_cashs.drop_duplicates(subset=["sell", "gt", "buy"])
     """
     plt.figure()
     plt.title("constrained search space final money left")
@@ -223,7 +246,7 @@ if __name__ == "__main__":
     df_params.iloc[:,3] = df_params.iloc[:,3] + 2
     df_params.iloc[:,4] = df_params.iloc[:,4] + 3
 
-    #colors 
+    #colors
     labels = ['% Buy from main','% Buy from micro','% Sell to main','% Sell to micro']
     x = df_params['index']
     ys1 = df_params.iloc[:,1]
@@ -328,17 +351,41 @@ if __name__ == "__main__":
     plt.figure()
     plt.title("difference of gt and sell and selling main/selling micro relation")
     df_diff_gt_sell = df_cashs.copy()
-    df_diff_gt_sell= pd.concat([df_diff_gt_sell.iloc[:,0:3], pd.DataFrame(df_diff_gt_sell.iloc[:,3].tolist())], axis = 1).reset_index(drop = True)
-    df_diff_gt_sell['difference'] = df_diff_gt_sell.iloc[:,0] - df_diff_gt_sell.iloc[:,1]
-    df_diff_gt_sell['difference'].replace([np.inf, -np.inf], np.nan, inplace=True)
-    x_diff = df_diff_gt_sell['difference'].to_numpy()
+    df_diff_gt_sell = pd.concat(
+        [
+            df_diff_gt_sell.iloc[:, 0:3],
+            pd.DataFrame(df_diff_gt_sell.iloc[:, 3].tolist()),
+        ],
+        axis=1,
+    ).reset_index(drop=True)
+    df_diff_gt_sell["difference"] = (
+        df_diff_gt_sell.iloc[:, 0] - df_diff_gt_sell.iloc[:, 1]
+    )
+    df_diff_gt_sell["difference"].replace([np.inf, -np.inf], np.nan, inplace=True)
+    x_diff = df_diff_gt_sell["difference"].to_numpy()
     x_diff[x_diff == 0] = np.nan
-    df_diff_gt_sell['sell_main_micro_rel'] = df_diff_gt_sell.iloc[:,5]/df_diff_gt_sell.iloc[:,6]
-    df_diff_gt_sell['sell_main_micro_rel'].replace([np.inf, -np.inf], np.nan, inplace=True)
-    y_ratio = df_diff_gt_sell['sell_main_micro_rel'].to_numpy()
-    plt.axvspan(min(x_diff), 0, facecolor='b', alpha=0.5,label = "more profitable for gt strategy")
-    plt.axvspan(0,max(x_diff)*1.1, facecolor='g', alpha=0.5,label = "more profitable for sell strategy")
-    plt.scatter(x_diff, y_ratio, marker = '.',color = "black")
+    df_diff_gt_sell["sell_main_micro_rel"] = (
+        df_diff_gt_sell.iloc[:, 5] / df_diff_gt_sell.iloc[:, 6]
+    )
+    df_diff_gt_sell["sell_main_micro_rel"].replace(
+        [np.inf, -np.inf], np.nan, inplace=True
+    )
+    y_ratio = df_diff_gt_sell["sell_main_micro_rel"].to_numpy()
+    plt.axvspan(
+        min(x_diff),
+        0,
+        facecolor="b",
+        alpha=0.5,
+        label="more profitable for gt strategy",
+    )
+    plt.axvspan(
+        0,
+        max(x_diff) * 1.1,
+        facecolor="g",
+        alpha=0.5,
+        label="more profitable for sell strategy",
+    )
+    plt.scatter(x_diff, y_ratio, marker=".", color="black")
     plt.xlabel("Difference of money left for always sell and gt")
     plt.ylabel("Ratio between selling main/selling micro prices")
     plt.legend()
@@ -349,12 +396,22 @@ if __name__ == "__main__":
     plt.figure()
     plt.title("difference of gt and sell and selling main/selling micro relation")
     df_diff_gt_sell = df_cashs.copy()
-    df_diff_gt_sell= pd.concat([df_diff_gt_sell.iloc[:,0:3], pd.DataFrame(df_diff_gt_sell.iloc[:,3].tolist())], axis = 1).reset_index(drop = True)
-    df_diff_gt_sell['difference'] = df_diff_gt_sell.iloc[:,0] - df_diff_gt_sell.iloc[:,1]
-    x_diff = np.nan_to_num(df_diff_gt_sell['difference'].to_numpy())
-    df_diff_gt_sell['sell_main_micro_rel'] = df_diff_gt_sell.iloc[:,5]/df_diff_gt_sell.iloc[:,6]
-    y_ratio = np.nan_to_num(df_diff_gt_sell['sell_main_micro_rel'].to_numpy())
-    plt.scatter(x_diff, y_ratio, marker = '.')
+    df_diff_gt_sell = pd.concat(
+        [
+            df_diff_gt_sell.iloc[:, 0:3],
+            pd.DataFrame(df_diff_gt_sell.iloc[:, 3].tolist()),
+        ],
+        axis=1,
+    ).reset_index(drop=True)
+    df_diff_gt_sell["difference"] = (
+        df_diff_gt_sell.iloc[:, 0] - df_diff_gt_sell.iloc[:, 1]
+    )
+    x_diff = np.nan_to_num(df_diff_gt_sell["difference"].to_numpy())
+    df_diff_gt_sell["sell_main_micro_rel"] = (
+        df_diff_gt_sell.iloc[:, 5] / df_diff_gt_sell.iloc[:, 6]
+    )
+    y_ratio = np.nan_to_num(df_diff_gt_sell["sell_main_micro_rel"].to_numpy())
+    plt.scatter(x_diff, y_ratio, marker=".")
     plt.xlabel("Difference of money left for always sell and gt")
     plt.ylabel("Ratio between selling main/selling micro prices")
     plt.savefig("figures/constrained_ratio_diff.png")
@@ -399,13 +456,14 @@ if __name__ == "__main__":
     for i in params:
         c1.append(i[0])
         c2.append(i[1])
-    
+
     plt.figure()
     plt.title("tuple constant arrangement")
     plt.plot(c1,label="c1 fixed buy/sell")
     plt.plot(c2,label="c2 not fixed buy/sell")
     plt.legend()
-    
-    print(end - start)
+
+
     plt.show()
     """
+    print(end - start_now)
