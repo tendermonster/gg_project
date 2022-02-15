@@ -62,8 +62,8 @@ def parameters():
 
 def plots_part_1():
     # this values show pretty much perfect normal distribution
-    n_players = 5
-    days = 1
+    n_players = 500
+    days = 100
     randomize = True  # p and c don't change each step
     strategy = {
         "random": None,
@@ -213,8 +213,6 @@ def plots_part_2(unconstrained=True):
     cashs_buy = []
     count = 0
     for i in range(0, len(params)):
-        # if count == 20:
-        #      break
         for j in params:
             if unconstrained:
                 BUY_MAIN = params[i][0]
@@ -251,21 +249,10 @@ def plots_part_2(unconstrained=True):
                 cashs_buy.append(cash)
         count += 1
     end = time.time()
-    # print(cashs)
-    # print(cs)
-    # cashs_gt = sorted(cashs_gt)
-    # cashs_sell = sorted(cashs_sell)
+
     print("mean money GT", np.mean(cashs_gt))
     print("mean money SELL", np.mean(cashs_sell))
     print("mean money BUY", np.mean(cashs_buy))
-    # plt.figure()
-    # plt.title("Money left after simulation for each parameter")
-    # plt.ylabel("Money left")
-    # plt.xlabel("Parameter with ID")
-    # plt.plot(cashs_gt, label="gt")
-    # plt.plot(cashs_sell, label="sell")
-    # plt.plot(cashs_buy, label="buy")
-    # plt.legend(loc="best")
 
     df_cashs = (
         pd.DataFrame(
