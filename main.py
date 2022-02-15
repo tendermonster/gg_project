@@ -13,7 +13,7 @@ sns.set(
     rc={
         "axes.axisbelow": True,
         "axes.edgecolor": "lightgrey",
-        "axes.facecolor": ".92",
+        "axes.facecolor": ".94",
         "axes.grid": True,
         "axes.labelcolor": "dimgrey",
         "axes.spines.right": False,
@@ -31,6 +31,7 @@ sns.set(
         "ytick.direction": "out",
         "ytick.left": False,
         "ytick.right": False,
+        "legend.facecolor": "white",
     },
 )
 
@@ -107,7 +108,7 @@ def plots_part_1():
         main_bought = np.sum(bought_main)
         plt.figure()
         # plt.title("Bought from maingrid with strategy {s}".format(s=k))
-        plt.xlabel("Player")
+        plt.xlabel("Player ID")
         plt.ylabel("Energy units bought")
         plt.plot(bought_main)
         plt.savefig(
@@ -122,7 +123,7 @@ def plots_part_1():
         micro_sold = np.sum(sold_micro)
         plt.figure()
         # plt.title("Sold to smartgrid with strategy {s}".format(s=k))
-        plt.xlabel("Player")
+        plt.xlabel("Player ID")
         plt.ylabel("Energy units sold")
         plt.plot(sold_micro)
         plt.savefig(
@@ -136,7 +137,7 @@ def plots_part_1():
         micro_bought = np.sum(bought_micro)
         plt.figure()
         # plt.title("Bought from smartgrid with strategy {s}".format(s=k))
-        plt.xlabel("Player")
+        plt.xlabel("Player ID")
         plt.ylabel("Energy units bought")
         plt.plot(bought_micro)
         plt.savefig(
@@ -416,7 +417,7 @@ def plots_part_2(unconstrained=True):
         bbox_to_anchor=(-0.12, -0.3),
     )
     plt.xlabel("Simulation ID")
-    plt.ylabel("Values")
+    plt.ylabel("Parameter value")
     plt.savefig(
         "figures/" + pathStr + "_parameters_sets_sellbettergt.png", bbox_inches="tight"
     )
@@ -469,13 +470,13 @@ def plots_part_2(unconstrained=True):
         bbox_to_anchor=(-0.12, -0.3),
     )
     plt.xlabel("Simulation ID")
-    plt.ylabel("Values")
+    plt.ylabel("Parameter value")
     plt.savefig(
         "figures/" + pathStr + "_parameters_sets_sellequalgt.png", bbox_inches="tight"
     )
     plt.close()
 
-    plt.figure()
+    plt.figure(figsize=(7, 7))
     # plt.title("difference of gt and sell and selling main/selling micro relation")
     df_diff_gt_sell = df_cashs.copy()
     df_diff_gt_sell = pd.concat(
