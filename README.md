@@ -1,6 +1,5 @@
 # Smartgrid simulation 
-![smartgrid](https://user-images.githubusercontent.com/25306286/154126421-b0c0293b-553a-4e45-90ae-c55e382b5be2.png)
-
+<img src="https://user-images.githubusercontent.com/25306286/154126421-b0c0293b-553a-4e45-90ae-c55e382b5be2.png" alt="smartgrid" width="700"/>
 
 ### Paperwork
 
