@@ -62,8 +62,8 @@ def parameters():
 
 def plots_part_1():
     # this values show pretty much perfect normal distribution
-    n_players = 500
-    days = 100
+    n_players = 5
+    days = 1
     randomize = True  # p and c don't change each step
     strategy = {
         "random": None,
@@ -540,6 +540,14 @@ def plots_part_2(unconstrained=True):
 
 
 if __name__ == "__main__":
+    import os
+
+    dirName = "figures"
+    if not os.path.isdir(dirName):
+        os.mkdir(dirName)
+    else:
+        for i in os.listdir(dirName):
+            os.remove(os.path.join(dirName, i))
     plots_part_1()
     plots_part_2(unconstrained=True)
     plots_part_2(unconstrained=False)
