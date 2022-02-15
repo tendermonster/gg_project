@@ -1,5 +1,7 @@
 .vscode/
+figures
 figures/
+./figures/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
