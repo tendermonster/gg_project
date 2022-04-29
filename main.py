@@ -7,31 +7,33 @@ import time
 import seaborn as sns
 
 sns.set_theme()
-sns.set_style("whitegrid")
+sns.set_style("darkgrid")
 sns.set(
-    font="DejaVu Sans",
+    font="IBM Plex Sans",
     rc={
         "axes.axisbelow": True,
-        "axes.edgecolor": "lightgrey",
-        "axes.facecolor": ".94",
+        "axes.edgecolor": "black",
+        "axes.facecolor": "white",
         "axes.grid": True,
-        "axes.labelcolor": "dimgrey",
+        "axes.labelcolor": "black",
         "axes.spines.right": False,
         "axes.spines.top": False,
         "figure.facecolor": "white",
         "lines.solid_capstyle": "round",
         "patch.edgecolor": "w",
         "patch.force_edgecolor": True,
-        "text.color": "dimgrey",
+        "text.color": "black",
         "xtick.bottom": False,
-        "xtick.color": "dimgrey",
+        "xtick.color": "black",
         "xtick.direction": "out",
         "xtick.top": False,
-        "ytick.color": "dimgrey",
+        "ytick.color": "black",
         "ytick.direction": "out",
         "ytick.left": False,
         "ytick.right": False,
         "legend.facecolor": "white",
+        "grid.color": "black",
+        "grid.linestyle": "--",
     },
 )
 
@@ -42,6 +44,7 @@ sns.set_context(
         "axes.titlesize": 22,  # numbers
         "axes.labelsize": 17,  # text
         "legend.fontsize": 12,
+        "grid.linewidth": 0.5,
     },
 )
 
@@ -97,9 +100,14 @@ def plots_part_1():
         plt.xlabel("Player ID")
         plt.ylabel("Amount of sold energy (in units)")
         plt.plot(sold_main)
+        # plt.savefig(
+        #    "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+        #    bbox_inches="tight",
+        # )
         plt.savefig(
-            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+            "figures/{m}_{w}_{s}_{c}.pdf".format(s=k, c=counter, w=type_where, m=mode),
             bbox_inches="tight",
+            format="pdf",
         )
         plt.close()
 
@@ -111,9 +119,14 @@ def plots_part_1():
         plt.xlabel("Player ID")
         plt.ylabel("Energy units bought")
         plt.plot(bought_main)
+        # plt.savefig(
+        #    "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+        #    bbox_inches="tight",
+        # )
         plt.savefig(
-            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+            "figures/{m}_{w}_{s}_{c}.pdf".format(s=k, c=counter, w=type_where, m=mode),
             bbox_inches="tight",
+            format="pdf",
         )
         plt.close()
 
@@ -126,9 +139,14 @@ def plots_part_1():
         plt.xlabel("Player ID")
         plt.ylabel("Energy units sold")
         plt.plot(sold_micro)
+        # plt.savefig(
+        #    "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+        #    bbox_inches="tight",
+        # )
         plt.savefig(
-            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+            "figures/{m}_{w}_{s}_{c}.pdf".format(s=k, c=counter, w=type_where, m=mode),
             bbox_inches="tight",
+            format="pdf",
         )
         plt.close()
 
@@ -140,9 +158,14 @@ def plots_part_1():
         plt.xlabel("Player ID")
         plt.ylabel("Energy units bought")
         plt.plot(bought_micro)
+        # plt.savefig(
+        #    "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+        #    bbox_inches="tight",
+        # )
         plt.savefig(
-            "figures/{m}_{w}_{s}_{c}.png".format(s=k, c=counter, w=type_where, m=mode),
+            "figures/{m}_{w}_{s}_{c}.pdf".format(s=k, c=counter, w=type_where, m=mode),
             bbox_inches="tight",
+            format="pdf",
         )
         plt.close()
 
@@ -164,9 +187,14 @@ def plots_part_1():
         plt.axvline(avg_cash, c="r", linewidth=5.0, label="average")
         plt.hist(cash, bins=len(cash), color="skyblue", ec="skyblue")
         plt.legend()
+        # plt.savefig(
+        #    "figures/{m}_{s}_{c}.png".format(s=k, c=counter, m=mode),
+        #    bbox_inches="tight",
+        # )
         plt.savefig(
-            "figures/{m}_{s}_{c}.png".format(s=k, c=counter, m=mode),
+            "figures/{m}_{s}_{c}.pdf".format(s=k, c=counter, m=mode),
             bbox_inches="tight",
+            format="pdf",
         )
         plt.close()
         counter += 1
@@ -186,7 +214,12 @@ def plots_part_1():
         loc="center left",
         bbox_to_anchor=(0.1, -0.3),
     )
-    plt.savefig("figures/{m}_{c}.png".format(c=counter, m=mode), bbox_inches="tight")
+    # plt.savefig("figures/{m}_{c}.png".format(c=counter, m=mode), bbox_inches="tight")
+    plt.savefig(
+        "figures/{m}_{c}.pdf".format(c=counter, m=mode),
+        bbox_inches="tight",
+        format="pdf",
+    )
     plt.close()
 
 
@@ -273,7 +306,10 @@ def plots_part_2(unconstrained=True):
     plt.xlabel("Simulation ID")
     plt.ylabel("Money left")
     plt.legend(loc="lower right")
-    plt.savefig("figures/" + pathStr + "_money_left.png", bbox_inches="tight")
+    # plt.savefig("figures/" + pathStr + "_money_left.png", bbox_inches="tight")
+    plt.savefig(
+        "figures/" + pathStr + "_money_left.pdf", bbox_inches="tight", format="pdf"
+    )
     plt.close()
 
     plt.figure()
@@ -312,7 +348,10 @@ def plots_part_2(unconstrained=True):
     )
     plt.xlabel("Simulation ID")
     plt.ylabel("Parameter value")
-    plt.savefig("figures/" + pathStr + "_parameters_sets.png", bbox_inches="tight")
+    # plt.savefig("figures/" + pathStr + "_parameters_sets.png", bbox_inches="tight")
+    plt.savefig(
+        "figures/" + pathStr + "_parameters_sets.pdf", bbox_inches="tight", format="pdf"
+    )
     plt.close()
 
     df_params.drop(columns="index", axis=1, inplace=True)
@@ -365,8 +404,13 @@ def plots_part_2(unconstrained=True):
     )
     plt.xlabel("Simulation ID")
     plt.ylabel("Parameter value")
+    # plt.savefig(
+    #    "figures/" + pathStr + "_parameters_sets_gtbettersell.png", bbox_inches="tight"
+    # )
     plt.savefig(
-        "figures/" + pathStr + "_parameters_sets_gtbettersell.png", bbox_inches="tight"
+        "figures/" + pathStr + "_parameters_sets_gtbettersell.pdf",
+        bbox_inches="tight",
+        format="pdf",
     )
     plt.close()
 
@@ -418,8 +462,13 @@ def plots_part_2(unconstrained=True):
     )
     plt.xlabel("Simulation ID")
     plt.ylabel("Parameter value")
+    # plt.savefig(
+    #    "figures/" + pathStr + "_parameters_sets_sellbettergt.png", bbox_inches="tight"
+    # )
     plt.savefig(
-        "figures/" + pathStr + "_parameters_sets_sellbettergt.png", bbox_inches="tight"
+        "figures/" + pathStr + "_parameters_sets_sellbettergt.pdf",
+        bbox_inches="tight",
+        format="pdf",
     )
     plt.close()
 
@@ -471,8 +520,13 @@ def plots_part_2(unconstrained=True):
     )
     plt.xlabel("Simulation ID")
     plt.ylabel("Parameter value")
+    # plt.savefig(
+    #    "figures/" + pathStr + "_parameters_sets_sellequalgt.png", bbox_inches="tight"
+    # )
     plt.savefig(
-        "figures/" + pathStr + "_parameters_sets_sellequalgt.png", bbox_inches="tight"
+        "figures/" + pathStr + "_parameters_sets_sellequalgt.pdf",
+        bbox_inches="tight",
+        format="pdf",
     )
     plt.close()
 
@@ -521,21 +575,24 @@ def plots_part_2(unconstrained=True):
         "Price ratio between selling to the\nmain grid and selling to the smart grid"
     )
     plt.legend()
-    plt.savefig("figures/" + pathStr + "_ratio_diff.png", bbox_inches="tight")
+    # plt.savefig("figures/" + pathStr + "_ratio_diff.png", bbox_inches="tight")
+    plt.savefig(
+        "figures/" + pathStr + "_ratio_diff.pdf", bbox_inches="tight", format="pdf"
+    )
     plt.close()
 
     print(end - start_now)
 
 
 if __name__ == "__main__":
-    import os
+    # import os
 
-    dirName = "figures"
-    if not os.path.isdir(dirName):
-        os.mkdir(dirName)
-    else:
-        for i in os.listdir(dirName):
-            os.remove(os.path.join(dirName, i))
+    # dirName = "figures"
+    # if not os.path.isdir(dirName):
+    #    os.mkdir(dirName)
+    # else:
+    #    for i in os.listdir(dirName):
+    #        os.remove(os.path.join(dirName, i))
     plots_part_1()
     plots_part_2(unconstrained=True)
-    plots_part_2(unconstrained=False)
+    # plots_part_2(unconstrained=False)
