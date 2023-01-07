@@ -3,7 +3,7 @@
 
 ### Paperwork
 
-This code was base for the work: A Game Theoretic Approach for Cost-Effective Management of Energy Harvesting Smart Grids
+This code was base for the work: A Game Theoretic Approach for Cost-Effective Management of Energy Harvesting Smart Grids (see DOI: 10.1109/IWCMC55113.2022.9825181)
 
 This project attempts to simulate smart grid and use game theoretical methodology to transact energy on a behalf of the prosumer.
 
